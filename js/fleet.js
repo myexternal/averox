@@ -155,7 +155,5 @@ export async function initFleet({ canvas, section, hint, initial = 'sedan' }) {
   resize(); onScroll();
   await show(initial);
   section.classList.add('has-3d');
-  // prefetch the other vehicle when the browser is idle
-  setTimeout(() => load(initial === 'sedan' ? 'van' : 'sedan'), 1500);
   return { show };
 }

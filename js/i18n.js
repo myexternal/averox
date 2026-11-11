@@ -44,7 +44,7 @@ export const T = {
     exCap: "Example trip: a weekday at 12:00, 1–4 passengers, 10 km, 15 minutes.",
     exStart: "starting fee", exTotal: "total",
 
-    fleetLt: "Four seats", fleetBd: "or eight.",
+    fleetLt: "One sedan.", fleetBd: "Four seats.",
     carSedan: "Sedan", carVan: "Van",
     fleetSedan: "For everyday rides, airport runs and nights out. Up to four passengers.",
     fleetVan: "For groups, families and big luggage. Up to eight passengers.",
@@ -115,7 +115,7 @@ export const T = {
     exCap: "Esimerkkimatka: arkipäivänä klo 12, 1–4 matkustajaa, 10 km, 15 minuuttia.",
     exStart: "aloitusmaksu", exTotal: "yhteensä",
 
-    fleetLt: "Neljä paikkaa", fleetBd: "tai kahdeksan.",
+    fleetLt: "Yksi henkilöauto.", fleetBd: "Neljä paikkaa.",
     carSedan: "Henkilöauto", carVan: "Tila-auto",
     fleetSedan: "Arkimatkoille, lentokentälle ja illanviettoon. Enintään neljä matkustajaa.",
     fleetVan: "Ryhmille, perheille ja isoille matkatavaroille. Enintään kahdeksan matkustajaa.",

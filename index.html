@@ -69,7 +69,7 @@
       <p class="hero-sub" data-i18n="heroSub">One clear price list for the whole region. Send your trip and Averox confirms the ride with you.</p>
       <dl class="facts">
         <div><dt data-money="startDay">€6.00</dt><dd data-i18n="factStart">starting fee, weekdays 07–18</dd></div>
-        <div><dt>1–8</dt><dd data-i18n="factSeats">passengers per car</dd></div>
+        <div><dt>1–4</dt><dd data-i18n="factSeats">passengers per car</dd></div>
         <div><dt>23</dt><dd data-i18n="factTowns">municipalities</dd></div>
       </dl>
     </div>
@@ -117,9 +117,8 @@
 
             <div class="field-row">
               <span class="field-label" id="paxLabel" data-i18n="fPax">Passengers</span>
-              <div class="seg seg-3" role="radiogroup" aria-labelledby="paxLabel" data-name="pax">
+              <div class="seg" role="radiogroup" aria-labelledby="paxLabel" data-name="pax">
                 <button type="button" role="radio" aria-checked="true" data-value="1-4">1–4</button>
-                <button type="button" role="radio" aria-checked="false" data-value="5-8">5–8</button>
                 <button type="button" role="radio" aria-checked="false" data-value="goods" data-i18n="paxGoods">Goods</button>
               </div>
             </div>
@@ -204,13 +203,6 @@
               <button type="button" role="radio" aria-checked="false" data-value="other" data-i18n="whenOther">Other times</button>
             </div>
           </div>
-          <div>
-            <p class="ctl-label" id="mPaxL" data-i18n="fPax">Passengers</p>
-            <div class="seg" role="radiogroup" aria-labelledby="mPaxL" data-name="mpax">
-              <button type="button" role="radio" aria-checked="true" data-value="small">1–4</button>
-              <button type="button" role="radio" aria-checked="false" data-value="large">5–8</button>
-            </div>
-          </div>
         </div>
         <a class="btn btn-line" href="#book" id="meterBook" data-i18n="meterBook">Book this ride</a>
       </div>
@@ -221,6 +213,7 @@
 <!-- ═════════ PRICE LIST ═════════ -->
 <section class="prices" id="prices">
   <div class="wrap prices-grid">
+   <div class="prices-top">
     <header class="prices-head reveal">
       <h2 class="title"><span class="lt" data-i18n="pricesLt">One price list.</span> <span class="bd" data-i18n="pricesBd">All of Pirkanmaa.</span></h2>
       <p data-i18n="pricesIntro">The price of a taxi trip within Averox's service area is made up of a starting fee, a per-kilometre charge and a per-minute charge. The same rates apply across the whole service area.</p>
@@ -235,7 +228,6 @@
       <div class="ledger-group reveal">
         <h3 data-i18n="lgKm">Per kilometre</h3>
         <div class="ledger-row"><span data-i18n="lgSmall">1–4 passengers</span><b><span data-money="kmSmall">€1.25</span><small>/km</small></b></div>
-        <div class="ledger-row"><span data-i18n="lgLarge">5–8 passengers</span><b><span data-money="kmLarge">€2.11</span><small>/km</small></b></div>
       </div>
       <div class="ledger-group reveal">
         <h3 data-i18n="lgMin">Per minute</h3>
@@ -243,6 +235,7 @@
       </div>
       <p class="vat reveal" data-i18n="vat">Prices include VAT: 14 % for passenger transport and 25.5 % for goods transport.</p>
     </div>
+   </div>
 
     <div class="example reveal">
       <p class="example-cap" data-i18n="exCap">Example trip: a weekday at 12:00, 1–4 passengers, 10 km, 15 minutes.</p>
@@ -262,13 +255,8 @@
 <!-- ═════════ FLEET (3D) ═════════ -->
 <section class="fleet" id="fleet">
   <div class="wrap fleet-copy">
-    <h2 class="title reveal"><span class="lt" data-i18n="fleetLt">Four seats</span> <span class="bd" data-i18n="fleetBd">or eight.</span></h2>
+    <h2 class="title reveal"><span class="lt" data-i18n="fleetLt">One sedan.</span> <span class="bd" data-i18n="fleetBd">Four seats.</span></h2>
     <div class="fleet-side reveal">
-      <div class="vtoggle" role="tablist" aria-label="Vehicle">
-        <button type="button" role="tab" aria-selected="true" data-car="sedan"><b data-i18n="carSedan">Sedan</b><span>1–4</span></button>
-        <button type="button" role="tab" aria-selected="false" data-car="van"><b data-i18n="carVan">Van</b><span>5–8</span></button>
-        <span class="vthumb" aria-hidden="true"></span>
-      </div>
       <p class="fleet-text" id="fleetText" data-i18n="fleetSedan">For everyday rides, airport runs and nights out. Up to four passengers.</p>
       <p class="fleet-rate"><b id="fleetRate">1.25</b><span>€/km</span></p>
     </div>
@@ -300,7 +288,7 @@
         </figcaption>
       </figure>
       <figure class="ride ride-c reveal">
-        <div class="ride-img"><img src="media/goods-1168.webp" srcset="media/goods-700.webp 700w, media/goods-1168.webp 1168w" sizes="(min-width: 900px) 36vw, 100vw" alt="Cardboard boxes being loaded into the open boot of a taxi van at night" loading="lazy"></div>
+        <div class="ride-img"><img src="media/goods-1168.webp" srcset="media/goods-700.webp 700w, media/goods-1168.webp 1168w" sizes="(min-width: 900px) 36vw, 100vw" alt="Parcels being loaded into the boot of a black taxi sedan at night" loading="lazy"></div>
         <figcaption>
           <h3 data-i18n="rGoodsT">Goods and parcels</h3>
           <p data-i18n="rGoodsP">We carry goods as well as people. Goods transport prices include 25.5 % VAT.</p>

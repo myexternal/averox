@@ -282,7 +282,9 @@ const meter = (() => {
   });
 
   const whenSeg = initSeg($('[data-name="mwhen"]'), (v) => { s.day = v === 'day'; render(); });
-  const paxSeg = initSeg($('[data-name="mpax"]'), (v) => { s.large = v === 'large'; render(); });
+  // Sedan only for now: no 5–8 choice on the site. s.large stays false; the rate stays in config for later.
+  const mpax = $('[data-name="mpax"]');
+  const paxSeg = mpax ? initSeg(mpax, (v) => { s.large = v === 'large'; render(); }) : { set() {}, get: () => 'small' };
 
   function fillRange(el) { el.style.setProperty('--p', `${((el.value - el.min) / (el.max - el.min)) * 100}%`); }
   kmIn.addEventListener('input', () => { s.km = Number(kmIn.value); s.route = null; render(true); }); // 1:1 while dragging
@@ -424,39 +426,17 @@ const area = (() => {
   return { render, select };
 })();
 
-/* ── Fleet copy (3D loads lazily) ───────── */
-let car = 'sedan';
+/* ── Fleet copy (3D loads lazily). Sedan only for now. ── */
+const car = 'sedan';
 function fleetCopy() {
-  $('#fleetText').textContent = t(car === 'van' ? 'fleetVan' : 'fleetSedan');
-  $('#fleetRate').textContent = num(car === 'van' ? R.kmLarge : R.kmSmall);
+  $('#fleetText').textContent = t('fleetSedan');
+  $('#fleetRate').textContent = num(R.kmSmall);
 }
-const vt = $('.vtoggle');
-const tabs = $$('[role="tab"]', vt);
-let fleet3d = null;
-function chooseCar(next, focus) {
-  if (next === car) return;
-  car = next;
-  vt.dataset.on = car;
-  tabs.forEach((b) => { const on = b.dataset.car === car; b.setAttribute('aria-selected', String(on)); b.tabIndex = on ? 0 : -1; if (on && focus) b.focus(); });
-  const txt = $('#fleetText');
-  txt.classList.add('is-swap');
-  setTimeout(() => { fleetCopy(); txt.classList.remove('is-swap'); }, 180);
-  $('#fleetFallback').src = `media/${car}-900.webp`;
-  fleet3d && fleet3d.show(car);
-}
-tabs.forEach((b, i) => {
-  b.tabIndex = i === 0 ? 0 : -1;
-  b.addEventListener('click', () => chooseCar(b.dataset.car));
-  b.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); chooseCar(car === 'sedan' ? 'van' : 'sedan', true); }
-  });
-});
 const fleetIO = new IntersectionObserver((ents) => {
   if (!ents.some((e) => e.isIntersecting)) return;
   fleetIO.disconnect();
   import('./fleet.js').then((m) => m.initFleet({ canvas: $('#fleetCanvas'), section: $('#fleet'), hint: $('#dragHint'), initial: car }))
-    .then((api) => { fleet3d = api; })
-    .catch((err) => console.warn('3D unavailable', err));
+        .catch((err) => console.warn('3D unavailable', err));
 }, { rootMargin: '900px 0px' });
 fleetIO.observe($('#fleet'));
 

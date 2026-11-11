@@ -318,7 +318,7 @@ button, [role="radio"], [role="tab"], .btn { user-select: none; -webkit-user-sel
 .controls { display: grid; gap: 14px; align-content: start; }
 .ctl { background: var(--kerb); border: 1px solid var(--line); border-radius: 20px; padding: 18px 20px; display: grid; gap: 14px; }
 .ctl-2 { grid-template-columns: 1fr; }
-@media (min-width: 560px) { .ctl-2 { grid-template-columns: 1.25fr 1fr; } }
+@media (min-width: 560px) { .ctl-2:has(> div + div) { grid-template-columns: 1.25fr 1fr; } }
 .ctl-2 > div { display: grid; gap: 10px; }
 .ctl-label { margin: 0; display: flex; justify-content: space-between; align-items: baseline; font-size: 14px; font-weight: 600; color: var(--fog); }
 .ctl-label b { font: 700 18px/1 var(--f-text); color: var(--snow); font-variant-numeric: tabular-nums; }
@@ -344,10 +344,11 @@ input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px 
 /* ── Price list (light) ───────────────── */
 .prices { background: var(--snow); color: var(--ink); padding: var(--sec) 0; }
 .prices-grid { display: grid; gap: clamp(48px, 6vw, 80px); }
+.prices-top { display: grid; gap: clamp(48px, 6vw, 80px); }
+/* The sticky heading lives inside .prices-top, so it stops at the end of the ledger and never slides over the example sum. */
 @media (min-width: 1000px) {
-  .prices-grid { grid-template-columns: 5fr 7fr; column-gap: clamp(48px, 7vw, 120px); }
-  .prices-head { position: sticky; top: calc(var(--bar-h) + 40px); align-self: start; }
-  .example { grid-column: 1 / -1; }
+  .prices-top { grid-template-columns: 5fr 7fr; column-gap: clamp(48px, 7vw, 120px); align-items: start; }
+  .prices-head { position: sticky; top: calc(var(--bar-h) + 40px); }
 }
 .prices-head { display: grid; gap: 26px; }
 .prices-head p { margin: 0; color: var(--ink-2); max-width: 44ch; }
