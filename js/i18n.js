@@ -22,7 +22,7 @@ export const T = {
     errReq: "Required", errPhone: "Check the number", errEmail: "Check the address", errPast: "Pick a time in the future",
     doneTitle: "Request sent.", doneText: "Averox will confirm your ride by phone or email.",
     demoNote: "Preview: the form isn't connected yet, so nothing was sent.",
-    sendErr: "Sending failed. Please try again in a moment.",
+    sendErr: "The booking couldn't be sent from the website just now.", sendMail: "Send it by email instead",
     again: "Book another ride",
     sumNow: "now", sumGoods: "goods", sumPax: "passengers",
 
@@ -93,7 +93,7 @@ export const T = {
     errReq: "Pakollinen tieto", errPhone: "Tarkista numero", errEmail: "Tarkista osoite", errPast: "Valitse tuleva ajankohta",
     doneTitle: "Tilaus lähetetty.", doneText: "Averox vahvistaa kyydin puhelimitse tai sähköpostilla.",
     demoNote: "Esikatselu: lomaketta ei ole vielä kytketty, joten mitään ei lähetetty.",
-    sendErr: "Lähetys epäonnistui. Yritä hetken päästä uudelleen.",
+    sendErr: "Tilausta ei saatu juuri nyt lähetettyä sivun kautta.", sendMail: "Lähetä se sähköpostilla",
     again: "Tilaa toinen kyyti",
     sumNow: "heti", sumGoods: "tavarakuljetus", sumPax: "matkustajaa",
 

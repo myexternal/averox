@@ -139,7 +139,8 @@ const booking = (() => {
     el.textContent = '';
     const b1 = document.createElement('b'); b1.textContent = f('pickup').value.trim();
     const b2 = document.createElement('b'); b2.textContent = f('destination').value.trim();
-    el.append(b1, ' → ', b2, document.createElement('br'), `${whenTxt} · ${p}`);
+    const sep = document.createElement('span'); sep.className = 'sum-sep'; sep.textContent = ' · '; // replaces the line break on the wide desktop strip
+    el.append(b1, ' → ', b2, document.createElement('br'), sep, `${whenTxt} · ${p}`);
   }
 
   $('#swapBtn').addEventListener('click', (e) => {
@@ -203,10 +204,15 @@ const booking = (() => {
     if (e.key === 'Enter') { e.preventDefault(); $('#toStep2').click(); }
   }));
 
+  const notes = f('notes');
+  const grow = () => { notes.style.height = 'auto'; notes.style.height = Math.min(notes.scrollHeight + 2, 132) + 'px'; };
+  notes.addEventListener('input', grow);
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (step !== 2) return;
     if (!validate2()) return;
+    $('#sendErr').hidden = true;
     const btn = $('#sendBtn');
     btn.classList.add('is-busy'); $('span', btn).textContent = t('sending');
     const d = pickedDate();
@@ -260,19 +266,23 @@ const booking = (() => {
     } catch (err) { result = 'err'; }
     btn.classList.remove('is-busy'); $('span', btn).textContent = t('send');
     if (result === 'err') {
+      // Never a dead end: stay on step 2 (nothing typed is lost) and offer the same booking as a ready-made email.
+      const to = CFG.bookingEmail || CFG.email;
+      const fb = $('#mailFallback');
+      fb.hidden = !to;
+      if (to) fb.href = `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(Object.entries(fiData).map(([k, v]) => `${k}: ${v}`).join('\n'))}`;
+      $('.consent', form).insertAdjacentElement('afterend', $('#sendErr'));
       $('#sendErr').hidden = false;
-      setTimeout(() => { $('#sendErr').hidden = true; }, 6000);
-      // stay on step 2 so nothing typed is lost
-      btn.insertAdjacentElement('afterend', $('#sendErr'));
       return;
     }
+    $('#sendErr').hidden = true;
     $('#demoNote').hidden = result !== 'demo';
     go(3);
     $('#again').focus({ preventScroll: true });
   });
 
   $('#again').addEventListener('click', () => {
-    form.reset(); defaultsLater(); when.set('now'); pax.set('1-4');
+    form.reset(); defaultsLater(); when.set('now'); pax.set('1-4'); notes.style.height = '';
     $$('.field', form).forEach((fl) => fl.classList.remove('is-bad'));
     go(1); f('pickup').focus({ preventScroll: true });
   });

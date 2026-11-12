@@ -7,6 +7,8 @@ All in **`js/config.js`**:
 
 1. **Booking emails: set to hello@averox.fi** (`bookingEmail`). A static site can't send email itself, so bookings go through FormSubmit (formsubmit.co, free, no account).
    - **One-time activation:** the first booking sent from the live site makes FormSubmit email an "Activate Form" link to hello@averox.fi. Click it. Bookings are delivered from then on. Until it is clicked, the form shows its "couldn't send" message, so nobody gets a false confirmation.
+   - The activation email comes from FormSubmit (submissions@formsubmit.co) and often lands in **spam/junk**. Look there first.
+   - If sending ever fails, the form keeps what was typed and offers "Lähetä se sähköpostilla", which opens the customer's email app with the booking already filled in, addressed to hello@averox.fi.
    - Each email is a table in Finnish: Mistä, Minne, Milloin, Matkustajat, Aloitusmaksu, Nimi, Puhelin, Sähköposti, Lisätiedot, Asiakkaan kieli. Replying goes to the customer if they gave an email.
    - Alternatives: a Web3Forms key (`web3formsKey`) or a Formspree endpoint (`formspreeEndpoint`) is used first if filled in. With all three empty, the form runs in preview mode.
 2. **Phone and email.** `email` is set to hello@averox.fi and shows in the closing section and footer. `phone` is still empty (hidden). A taxi site really should show a phone number.
