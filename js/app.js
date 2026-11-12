@@ -286,11 +286,23 @@ const booking = (() => {
     const p = acState[n].items[i]; if (!p) return;
     clearTimeout(acState[n].closeT);
     const town = (p.sub || '').split(',').pop().replace(/\d{5}\s*/, '').trim();
-    f(n).value = town && !p.main.includes(town) ? `${p.main}, ${town}` : p.main;
-    AC[n] = { ...p, q: f(n).value.trim(), picked: true };
+    const val = town && !p.main.includes(town) ? `${p.main}, ${town}` : p.main;
+    const inp = f(n), s = acState[n];
+    AC[n] = { ...p, q: val.trim(), picked: true };
     if (touch) ghostClose(n); else closeList(n);
-    clearBad(f(n)); setField(n, 'found');
-    if (n === 'pickup' && !f('destination').value.trim()) f('destination').focus(); else f(n).blur();
+    // Phone keyboards (iOS especially) hold the half-typed word "in composition" and write it back over the field when
+    // it loses focus, so the picked address vanished and only "Tum" stayed. So: let the keyboard commit first (blur),
+    // then set the address, and for a moment put it back if the keyboard overwrites it.
+    s.lock = { val, typed: inp.value, until: Date.now() + 1200 };
+    inp.blur();
+    inp.value = val;
+    const reassert = () => { if (s.lock && Date.now() < s.lock.until && inp.value !== val) inp.value = val; };
+    [0, 50, 150, 400, 900].forEach((ms) => setTimeout(reassert, ms));
+    clearBad(inp); setField(n, 'found');
+    setTimeout(() => {
+      reassert();
+      if (n === 'pickup' && !f('destination').value.trim()) f('destination').focus();
+    }, 60);
     estimateSoon(0);
   }
 
@@ -335,7 +347,13 @@ const booking = (() => {
   ['pickup', 'destination'].forEach((n) => {
     const inp = f(n), s = acState[n];
     listOf(n).addEventListener('mousedown', (e) => e.preventDefault());   // taps on the list never steal focus
-    inp.addEventListener('input', () => {
+    inp.addEventListener('input', (e) => {
+      // The keyboard writing the old half-typed word back right after a pick: undo it, and don't treat it as typing.
+      if (s.lock && Date.now() < s.lock.until && inp.value !== s.lock.val
+          && (inp.value === s.lock.typed || !['insertText', 'deleteContentBackward'].includes(e.inputType))) {
+        inp.value = s.lock.val; return;
+      }
+      s.lock = null;
       estSeq++; est.state = 'idle'; est.total = null; setField(n, 'idle'); refresh();
       clearTimeout(s.timer);
       if (inp.value.trim().length < 3) { s.seq++; closeList(n); } else s.timer = setTimeout(() => suggest(n), digiOn ? 220 : 800);
