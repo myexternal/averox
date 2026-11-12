@@ -121,10 +121,84 @@ const booking = (() => {
     if (!y || hh === undefined || Number.isNaN(hh)) return null;
     return new Date(y, m - 1, d, hh, mm || 0);
   }
+  /* ── Live estimate from the two addresses ──
+     Geocoding: OpenStreetMap Nominatim, biased to Pirkanmaa, one request at a time with a 1.1 s gap (its usage policy),
+     only after typing pauses or the field is left, and cached. Route: OSRM driving distance and time, no traffic. */
+  const est = { state: 'idle', km: 0, min: 0, from: null, to: null, total: null };
+  const geoCache = new Map(), routeCache = new Map();
+  let geoQueue = Promise.resolve(), lastGeo = 0, estSeq = 0;
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  function geocode(q) {
+    const key = q.toLowerCase();
+    if (geoCache.has(key)) return geoCache.get(key);
+    const run = async (query) => {
+      const wait = 1100 - (Date.now() - lastGeo); if (wait > 0) await sleep(wait);
+      lastGeo = Date.now();
+      const u = 'https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=fi&viewbox=22.8,62.4,25.0,60.9&accept-language=fi&q=' + encodeURIComponent(query);
+      const r = await fetch(u, { headers: { Accept: 'application/json' } });
+      if (!r.ok) throw new Error('geo ' + r.status);
+      const j = await r.json();
+      return j[0] ? { lat: +j[0].lat, lon: +j[0].lon, name: j[0].display_name.split(',').slice(0, 3).join(',').trim() } : null;
+    };
+    const p = (geoQueue = geoQueue.catch(() => {}).then(async () => (await run(q)) || (/\d|tampere/i.test(q) ? null : run(q + ', Tampere'))));
+    geoCache.set(key, p);
+    p.catch(() => geoCache.delete(key));
+    return p;
+  }
+  async function route(a, b) {
+    const key = `${a.lon},${a.lat};${b.lon},${b.lat}`;
+    if (!routeCache.has(key)) {
+      // ';' is sent as %3B because some proxies reject a raw ';' in the path. OSRM accepts both.
+      routeCache.set(key, fetch(`https://router.project-osrm.org/route/v1/driving/${key.replace(';', '%3B')}?overview=false`).then((r) => r.json()).then((j) => {
+        if (!j.routes || !j.routes[0]) throw new Error('no route');
+        return { km: Math.round(j.routes[0].distance / 100) / 10, min: Math.max(1, Math.round(j.routes[0].duration / 60)) };
+      }));
+      routeCache.get(key).catch(() => routeCache.delete(key));
+    }
+    return routeCache.get(key);
+  }
+  async function estimate() {
+    const a = f('pickup').value.trim(), b = f('destination').value.trim();
+    const seq = ++estSeq;
+    if (a.length < 3 || b.length < 3) { est.state = 'idle'; est.total = null; return refresh(); }
+    est.state = 'busy'; refresh();
+    try {
+      const [ga, gb] = await Promise.all([geocode(a), geocode(b)]);
+      if (seq !== estSeq) return;
+      if (!ga || !gb) { est.state = 'fail'; est.total = null; return refresh(); }
+      const r = await route(ga, gb);
+      if (seq !== estSeq) return;
+      Object.assign(est, { state: 'ok', km: r.km, min: r.min, from: ga.name, to: gb.name });
+    } catch (err) {
+      // Network or service trouble (not a bad address): say so, and let the customer book anyway.
+      if (seq !== estSeq) return;
+      est.state = 'err'; est.total = null;
+    }
+    refresh();
+  }
+  let estTimer = 0;
+  const estimateSoon = (ms) => { clearTimeout(estTimer); estTimer = setTimeout(estimate, ms); };
+  ['pickup', 'destination'].forEach((n) => {
+    f(n).addEventListener('input', () => { estSeq++; est.state = 'idle'; est.total = null; refresh(); estimateSoon(1200); });
+    f(n).addEventListener('change', () => estimateSoon(0));
+  });
+
   function refresh() {
     const d = pickedDate() || new Date();
-    $('#bookFee').textContent = money(isDayRate(d) ? R.startDay : R.startOther);
-    $('.book-fee span').textContent = t(when.get() === 'now' ? 'feeNow' : 'feeThen');
+    const day = isDayRate(d);
+    const goods = pax.get() === 'goods';
+    $('#bookFee').textContent = money(day ? R.startDay : R.startOther);
+    $('.book-fee .fee-l').textContent = t(when.get() === 'now' ? 'feeNow' : 'feeThen');
+    const box = $('#bookEst');
+    ['idle', 'busy', 'ok', 'fail', 'err'].forEach((s) => box.classList.toggle('is-' + s, est.state === s));
+    if (est.state === 'ok') {
+      est.total = fare({ km: est.km, min: est.min, day }).total * (goods ? (CFG.goodsFactor || 1) : 1);
+      $('#bookTotal').textContent = '≈ ' + money(est.total);
+      $('#beInfo').textContent = `${km1(est.km)} km · ${hm(est.min)}${goods ? ' · ' + t('estGoods') : ''}`;
+    } else {
+      if (est.state !== 'busy') $('#bookTotal').textContent = '–';
+      $('#beInfo').textContent = t({ busy: 'estBusy', fail: 'estFail', err: 'estErr' }[est.state] || 'estHint');
+    }
     if (step === 2) summary();
   }
   f('date').addEventListener('input', refresh);
@@ -141,11 +215,13 @@ const booking = (() => {
     const b2 = document.createElement('b'); b2.textContent = f('destination').value.trim();
     const sep = document.createElement('span'); sep.className = 'sum-sep'; sep.textContent = ' · '; // replaces the line break on the wide desktop strip
     el.append(b1, ' → ', b2, document.createElement('br'), sep, `${whenTxt} · ${p}`);
+    if (est.state === 'ok') { const e = document.createElement('b'); e.className = 'sum-est'; e.textContent = ` · ${t('estLabel')} ≈ ${money(est.total)}`; el.append(e); }
   }
 
   $('#swapBtn').addEventListener('click', (e) => {
     const a = f('pickup').value; f('pickup').value = f('destination').value; f('destination').value = a;
     e.currentTarget.classList.toggle('spun');
+    estimateSoon(0);
   });
 
   const fieldOf = (input) => input.closest('.field');
@@ -232,7 +308,10 @@ const booking = (() => {
     const subject = `Taksitilaus: ${data.pickup} → ${data.destination} (${data.when})`;
     const fiData = {
       'Mistä': data.pickup, 'Minne': data.destination, 'Milloin': data.when, 'Matkustajat': data.passengers,
-      'Aloitusmaksu': data.starting_fee, 'Nimi': data.name, 'Puhelin': data.phone, 'Sähköposti': data.email || '–',
+      'Aloitusmaksu': data.starting_fee,
+      'Hinta-arvio': est.state === 'ok' ? `≈ ${new Intl.NumberFormat('fi-FI', { style: 'currency', currency: 'EUR' }).format(est.total)} (${String(est.km).replace('.', ',')} km, ${est.min} min, ilman ruuhkaa)` : '–',
+      'Mistä (kartalla)': est.state === 'ok' ? est.from : '–', 'Minne (kartalla)': est.state === 'ok' ? est.to : '–',
+      'Nimi': data.name, 'Puhelin': data.phone, 'Sähköposti': data.email || '–',
       'Lisätiedot': data.notes || '–', 'Asiakkaan kieli': data.language
     };
     let result = 'demo';
@@ -282,7 +361,7 @@ const booking = (() => {
   });
 
   $('#again').addEventListener('click', () => {
-    form.reset(); defaultsLater(); when.set('now'); pax.set('1-4'); notes.style.height = '';
+    form.reset(); defaultsLater(); estSeq++; est.state = 'idle'; est.total = null; when.set('now'); pax.set('1-4'); notes.style.height = '';
     $$('.field', form).forEach((fl) => fl.classList.remove('is-bad'));
     go(1); f('pickup').focus({ preventScroll: true });
   });

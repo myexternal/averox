@@ -125,7 +125,10 @@
               </div>
             </div>
 
-            <p class="book-fee"><span data-i18n="feeNow">Aloitusmaksu nyt</span> <b id="bookFee">€6.00</b></p>
+            <div class="book-fee" id="bookEst" aria-live="polite">
+              <p class="be-main"><span data-i18n="estLabel">Hinta-arvio</span> <b id="bookTotal">–</b></p>
+              <p class="be-meta"><span id="beInfo">Kirjoita molemmat osoitteet, niin näet hinta-arvion.</span> <span class="be-start"><span class="fee-l">Aloitusmaksu nyt</span> <span id="bookFee">6,00 €</span></span></p>
+            </div>
             <button type="button" class="btn btn-amber btn-wide" id="toStep2"><span data-i18n="next">Jatka</span>
               <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11m0 0-4-4m4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </button>

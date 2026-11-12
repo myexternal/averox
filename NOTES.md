@@ -25,12 +25,19 @@ All in **`js/config.js`**:
 - Service area: **from Tampere to anywhere in Finland**, Helsinki Airport included (client, 2026-11-11). The map shows Finland's 19 regions (Statistics Finland 2025 borders). Clicking a region picks its main town. The list covers Helsinki Airport, Tampere Airport and 17 region capitals, each with the road distance from Keskustori and a weekday estimate.
 - Long trips are shown at meter rates, e.g. Helsinki Airport ≈ €361 and Rovaniemi ≈ €1,571. If Averox offers fixed prices for long trips, the site should say so.
 
+## Booking price estimate (added 2026-11-12)
+- When both addresses are typed in **Tilaa kyyti**, the box shows **Hinta-arvio ≈ X €** with the road distance and driving time. It updates when an address, the time (day/other rate) or Matkustajat/Tavaraa changes. The same estimate goes into the booking email ("Hinta-arvio", plus the addresses as found on the map).
+- How: the addresses are looked up with **OpenStreetMap Nominatim** (biased to Pirkanmaa, Finland only) and driven with **OSRM** (route distance and time). Both are free public services with no key and no guaranteed uptime. The site asks at most once per second and only after typing pauses, which keeps within Nominatim's rules for low traffic. If the business grows a lot, switch to a keyed service (e.g. Digitransit geocoding for Finland).
+- Price = starting fee + km × 1.25 + min × 1.15. Driving time has **no traffic**, so rush-hour trips can cost more on the meter. The meter sets the real price.
+- **Goods (assumption):** goods = passenger price × 1.255 / 1.14 (same net rates, 25.5 % VAT instead of 14 %). Change `goodsFactor` in `js/config.js` once the client confirms (1 = same price as passengers).
+- If an address isn't found, the box says so and shows no price. If the services are down, it says the customer can still book.
+
 ## Changed from the client's text
 - The price text said "Uniform pricing applies throughout the entire **TamCab** service area" (FI: "koko TamCabin palvelualueella"). That looks copied from another company. The site says "Averox service area" instead. Confirm with the client.
 
 ## Open questions for the client
 - Are public holidays (arkipyhät) charged at the "other times" starting fee? The meter treats Mon–Fri 07–18 as day rate and everything else as other times; holidays aren't handled.
-- Goods transport: same km/min rates as passengers (only VAT differs), or a separate price list? The site only says goods prices include 25.5 % VAT.
+- Goods transport: same km/min rates as passengers (only VAT differs), or a separate price list? The booking estimate currently assumes the same net rates with 25.5 % VAT (`goodsFactor` in config.js).
 - Phone number, email, business ID (Y-tunnus), opening hours / 24-7, payment methods, real fleet. None of these were given, so none are claimed.
 - Do they want a privacy notice page? The form collects name and phone; a short tietosuojaseloste is normally expected in Finland.
 

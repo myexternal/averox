@@ -30,5 +30,9 @@ window.AVEROX = {
     kmSmall: 1.25,      // 1–4 passengers
     kmLarge: 2.11,      // 5–8 passengers
     perMin: 1.15
-  }
+  },
+
+  // Goods: the price list gives VAT-inclusive rates for passengers (VAT 14 %) and says goods carry VAT 25.5 %.
+  // The booking estimate assumes the same net rates, so goods = passenger price × 1.255 / 1.14. Set to 1 if goods cost the same.
+  goodsFactor: 1.255 / 1.14
 };

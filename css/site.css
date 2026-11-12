@@ -255,8 +255,17 @@ button, [role="radio"], [role="tab"], .btn { user-select: none; -webkit-user-sel
 .field-row { display: grid; gap: 6px; }
 .when-later { display: grid; grid-template-columns: 1.3fr 1fr; gap: 10px; }
 .when-later .field .err { grid-column: 1 / -1; }
-.book-fee { margin: 2px 0 0; display: flex; justify-content: space-between; align-items: baseline; font-size: 14px; color: var(--slush); padding-top: 12px; border-top: 1px solid var(--line); }
-.book-fee b { font: 700 17px/1 var(--f-text); color: var(--amber); font-variant-numeric: tabular-nums; }
+.book-fee { margin: 2px 0 0; display: grid; gap: 4px; font-size: 14px; color: var(--slush); padding-top: 12px; border-top: 1px solid var(--line); }
+.book-fee p { margin: 0; }
+.be-main { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.be-main b { font: 700 20px/1 var(--f-text); color: var(--amber); font-variant-numeric: tabular-nums; transition: opacity 200ms ease; }
+.book-fee.is-busy .be-main b { opacity: .45; }
+.be-meta { font-size: 12.5px; line-height: 1.45; }
+.be-meta .be-start { white-space: nowrap; }
+.be-meta .be-start::before { content: "· "; }
+.book-fee.is-idle .be-meta .be-start::before, .book-fee.is-fail .be-meta .be-start::before, .book-fee.is-err .be-meta .be-start::before { content: ""; display: block; }
+#bookFee { color: var(--fog); font-variant-numeric: tabular-nums; }
+.book-fee.is-fail #beInfo, .book-fee.is-err #beInfo { color: var(--amber-2); }
 .trip-sum { margin: 0; padding: 12px 14px; background: var(--kerb-2); border-radius: var(--r-sm); font-size: 14px; color: var(--fog); line-height: 1.45; }
 .trip-sum b { color: var(--snow); font-weight: 600; }
 .trip-sum .sum-sep { display: none; }
@@ -552,7 +561,8 @@ input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px 
   .pane[data-step="1"] > .seg { grid-area: when; }
   .pane[data-step="1"] .when-later { grid-area: later; }
   .pane[data-step="1"] .field-row { grid-area: pax; }
-  .pane[data-step="1"] .book-fee { grid-area: fee; border: 0; padding: 0; margin: 0; justify-content: flex-end; gap: 12px; align-self: center; }
+  .pane[data-step="1"] .book-fee { grid-area: fee; border: 0; padding: 0; margin: 0; align-self: center; justify-items: end; text-align: right; }
+  .pane[data-step="1"] .be-main { justify-content: flex-end; }
   .pane[data-step="1"] #toStep2 { grid-area: go; height: 50px; }
   .swap { left: 50%; right: auto; top: auto; bottom: 7px; translate: -50% 0; rotate: 90deg; }
   .route-fields .field:first-child input { padding-right: 26px; }
