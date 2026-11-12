@@ -7,7 +7,7 @@ const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 const reduced = matchMedia('(prefers-reduced-motion: reduce)');
 
-let lang = 'en';
+let lang = 'fi';
 const t = (k) => (T[lang] && T[lang][k]) ?? T.en[k] ?? k;
 const locale = () => (lang === 'fi' ? 'fi-FI' : 'en-IE');
 const money = (v, d = 2) => new Intl.NumberFormat(locale(), { style: 'currency', currency: 'EUR', minimumFractionDigits: d, maximumFractionDigits: d }).format(v);
@@ -26,8 +26,16 @@ function fare({ km, min, day = true, large = false }) {
   const r2 = (v) => Math.round(v * 100) / 100;
   return { start, time: r2(time), dist: r2(dist), total: r2(start + time + dist) };
 }
-const routeById = Object.fromEntries(MAP.routes.map((r) => [r.id, r]));
-const placeName = (id) => (id === 'Lentoasema' ? t('Lentoasema') : id);
+const routeById = Object.fromEntries([...MAP.routes, ...MAP.local].map((r) => [r.id, r]));
+const NAMES = { Lentoasema: 'Lentoasema', 'Helsinki Airport': 'hkiAir' };
+const placeName = (id) => (NAMES[id] ? t(NAMES[id]) : id);
+const longName = (id) => (id === 'Lentoasema' ? t('rAirT') : id === 'Helsinki Airport' ? t('hkiAirT') : placeName(id));
+const hm = (m) => (m < 60 ? `${m} min` : `${Math.floor(m / 60)} h ${String(m % 60).padStart(2, '0')} min`);
+/* Sliders run on a square curve so short city trips stay precise and the far end still reaches Lapland. */
+const KM_MAX = 800, MIN_MAX = 660, POS = 1000;
+const posTo = (v, max) => 1 + (max - 1) * Math.pow(v / POS, 2);
+const toPos = (x, max) => Math.round(POS * Math.sqrt(Math.max(0, x - 1) / (max - 1)));
+const roundKm = (k) => (k < 100 ? Math.round(k * 2) / 2 : Math.round(k));
 
 /* ── Language ───────────────────────────── */
 function fill(str) {
@@ -37,7 +45,7 @@ function fill(str) {
 function applyLang(next, save = true) {
   lang = next === 'fi' ? 'fi' : 'en';
   document.documentElement.lang = lang;
-  if (save) { try { localStorage.setItem('averox-lang', lang); } catch (e) {} }
+  if (save) { try { localStorage.setItem('averox-lang-v2', lang); } catch (e) {} }
   $$('[data-i18n]').forEach((el) => { el.textContent = fill(t(el.dataset.i18n)); });
   $$('[data-i18n-ph]').forEach((el) => { el.placeholder = t(el.dataset.i18nPh); });
   $$('[data-i18n-aria]').forEach((el) => { el.setAttribute('aria-label', t(el.dataset.i18nAria)); });
@@ -52,7 +60,7 @@ function applyLang(next, save = true) {
   const L = $('.lang');
   L.dataset.on = lang;
   $$('button', L).forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.lang === lang)));
-  document.title = lang === 'fi' ? 'Averox · Taksi Pirkanmaalla' : 'Averox · Taxi in Pirkanmaa';
+  document.title = lang === 'fi' ? 'Averox · Taksi Tampereelta koko Suomeen' : 'Averox · Taxi from Tampere to all of Finland';
   $('#fareFig').classList.toggle('cur-first', lang === 'en');
   $('#airFare').textContent = money(Math.round(fare({ km: routeById.Lentoasema.km, min: routeById.Lentoasema.min }).total), 0);
   meter.render(true);
@@ -202,11 +210,12 @@ const booking = (() => {
     const btn = $('#sendBtn');
     btn.classList.add('is-busy'); $('span', btn).textContent = t('sending');
     const d = pickedDate();
+    // The owner reads these emails in Finnish, so the field names and subject are Finnish whatever language the customer used.
     const data = {
       pickup: f('pickup').value.trim(),
       destination: f('destination').value.trim(),
-      when: when.get() === 'now' ? 'As soon as possible' : d.toLocaleString('fi-FI', { weekday: 'short', day: 'numeric', month: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
-      passengers: pax.get() === 'goods' ? 'Goods transport' : pax.get().replace('-', '–'),
+      when: when.get() === 'now' ? 'Mahdollisimman pian' : d.toLocaleString('fi-FI', { weekday: 'short', day: 'numeric', month: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+      passengers: pax.get() === 'goods' ? 'Tavarakuljetus' : pax.get().replace('-', '–'),
       starting_fee: $('#bookFee').textContent,
       name: f('name').value.trim(),
       phone: f('phone').value.trim(),
@@ -214,23 +223,37 @@ const booking = (() => {
       notes: f('notes').value.trim(),
       language: lang.toUpperCase()
     };
-    const subject = `Taxi booking: ${data.pickup} → ${data.destination} (${data.when})`;
+    const subject = `Taksitilaus: ${data.pickup} → ${data.destination} (${data.when})`;
+    const fiData = {
+      'Mistä': data.pickup, 'Minne': data.destination, 'Milloin': data.when, 'Matkustajat': data.passengers,
+      'Aloitusmaksu': data.starting_fee, 'Nimi': data.name, 'Puhelin': data.phone, 'Sähköposti': data.email || '–',
+      'Lisätiedot': data.notes || '–', 'Asiakkaan kieli': data.language
+    };
     let result = 'demo';
     try {
       if (form.elements.botcheck.checked) result = 'ok'; // bot: pretend success, send nothing
       else if (CFG.web3formsKey) {
         const res = await fetch('https://api.web3forms.com/submit', {
           method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-          body: JSON.stringify({ access_key: CFG.web3formsKey, subject, from_name: 'Averox website', ...data, replyto: data.email || undefined, botcheck: false })
+          body: JSON.stringify({ access_key: CFG.web3formsKey, subject, from_name: 'Averox-verkkosivu', ...fiData, replyto: data.email || undefined, botcheck: false })
         });
         const j = await res.json().catch(() => ({}));
         result = res.ok && j.success !== false ? 'ok' : 'err';
       } else if (CFG.formspreeEndpoint) {
         const res = await fetch(CFG.formspreeEndpoint, {
           method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-          body: JSON.stringify({ _subject: subject, ...data, _replyto: data.email || undefined })
+          body: JSON.stringify({ _subject: subject, ...fiData, _replyto: data.email || undefined })
         });
         result = res.ok ? 'ok' : 'err';
+      } else if (CFG.bookingEmail) {
+        // FormSubmit: no account or key. The very first booking makes FormSubmit email an "Activate Form" link to this address;
+        // bookings are delivered once someone clicks it. Until then FormSubmit answers success:false, so the customer sees the error and can call instead.
+        const res = await fetch('https://formsubmit.co/ajax/' + encodeURIComponent(CFG.bookingEmail), {
+          method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({ _subject: subject, _template: 'table', _captcha: 'false', _replyto: data.email || undefined, ...fiData })
+        });
+        const j = await res.json().catch(() => ({}));
+        result = res.ok && String(j.success) === 'true' ? 'ok' : 'err';
       } else {
         await new Promise((r) => setTimeout(r, 650));
       }
@@ -271,7 +294,7 @@ const meter = (() => {
   const chipsEl = $('#routeChips');
   const s = { km: 10, min: 15, day: true, large: false, route: null };
   let shown = 35.75, raf = 0;
-  const CHIPS = ['Lentoasema', 'Hervanta', 'Pirkkala', 'Nokia', 'Ylöjärvi', 'Kangasala', 'Lempäälä', 'Valkeakoski'];
+  const CHIPS = ['Lentoasema', 'Helsinki Airport', 'Hervanta', 'Nokia', 'Ylöjärvi', 'Kangasala', 'Lempäälä', 'Hämeenlinna'];
 
   chipsEl.innerHTML = '';
   CHIPS.forEach((id) => {
@@ -286,14 +309,15 @@ const meter = (() => {
   const mpax = $('[data-name="mpax"]');
   const paxSeg = mpax ? initSeg(mpax, (v) => { s.large = v === 'large'; render(); }) : { set() {}, get: () => 'small' };
 
-  function fillRange(el) { el.style.setProperty('--p', `${((el.value - el.min) / (el.max - el.min)) * 100}%`); }
-  kmIn.addEventListener('input', () => { s.km = Number(kmIn.value); s.route = null; render(true); }); // 1:1 while dragging
-  minIn.addEventListener('input', () => { s.min = Number(minIn.value); s.route = null; render(true); });
+  function fillRange(el) { el.style.setProperty('--p', `${(el.value / POS) * 100}%`); }
+  kmIn.addEventListener('input', () => { s.km = roundKm(posTo(Number(kmIn.value), KM_MAX)); s.route = null; render(true); }); // 1:1 while dragging
+  minIn.addEventListener('input', () => { s.min = Math.round(posTo(Number(minIn.value), MIN_MAX)); s.route = null; render(true); });
+  kmIn.value = toPos(s.km, KM_MAX); minIn.value = toPos(s.min, MIN_MAX);
 
   function setRoute(id) {
     const r = routeById[id]; if (!r) return;
     s.route = id; s.km = r.km; s.min = Math.max(1, r.min);
-    kmIn.value = Math.min(r.km, Number(kmIn.max)); minIn.value = Math.min(s.min, Number(minIn.max));
+    kmIn.value = toPos(r.km, KM_MAX); minIn.value = toPos(s.min, MIN_MAX);
     render();
   }
 
@@ -323,6 +347,7 @@ const meter = (() => {
     $('#rcDistCalc').textContent = `${km1(s.km)} km × ${num(s.large ? R.kmLarge : R.kmSmall)}`;
     $('#exampleTag').classList.toggle('is-off', !(s.km === 10 && s.min === 15 && s.day && !s.large));
     fillRange(kmIn); fillRange(minIn);
+    kmIn.setAttribute('aria-valuetext', `${km1(s.km)} km`); minIn.setAttribute('aria-valuetext', hm(s.min));
     $$('.chip', chipsEl).forEach((b) => {
       b.textContent = placeName(b.dataset.route);
       b.setAttribute('aria-pressed', String(b.dataset.route === s.route));
@@ -331,7 +356,7 @@ const meter = (() => {
 
   $('#meterBook').addEventListener('click', () => {
     const r = s.route && routeById[s.route];
-    booking.prefill({ destination: r ? (r.id === 'Lentoasema' ? t('rAirT') : r.place.replace(', Tampere', '') + (r.id === 'Hervanta' ? ', Tampere' : '')) : undefined, large: s.large });
+    booking.prefill({ destination: r ? (r.place ? r.place.replace(', Tampere', '') + (r.id === 'Hervanta' ? ', Tampere' : '') : longName(r.id)) : undefined, large: s.large });
   });
 
   return { render, setRoute, seg: { whenSeg, paxSeg } };
@@ -345,27 +370,25 @@ const area = (() => {
   const pad = 30;
   svg.setAttribute('viewBox', `${-pad} ${-pad} ${MAP.w + pad * 2} ${MAP.h + pad * 2}`);
   const gM = mk('g', {}, svg);
-  const muniFor = { Lentoasema: 'Pirkkala', Hervanta: 'Tampere' };
-  const routeForMuni = { Tampere: 'Hervanta' };
-  MAP.munis.forEach((m) => {
-    const p = mk('path', { d: m.d, class: 'muni', 'data-id': m.id }, gM);
-    p.addEventListener('click', () => select(routeForMuni[m.id] || m.id));
+  const muniFor = { 'Helsinki Airport': 'Uusimaa' };
+  MAP.regions.forEach((m) => {
+    const p = mk('path', { d: m.d, class: 'muni' + (m.code === '06' ? ' is-home' : '') + (m.route ? '' : ' is-off'), 'data-id': m.id }, gM);
+    if (m.route) { muniFor[m.route] = muniFor[m.route] || m.id; p.addEventListener('click', () => select(m.route)); }
   });
-  mk('path', { d: MAP.outline, class: 'outline' }, svg);
   const gR = mk('g', {}, svg);
   MAP.routes.forEach((r) => mk('path', { d: r.d, class: 'rt' }, gR));
   const active = mk('path', { class: 'rt-on', d: '' }, svg);
   const gD = mk('g', {}, svg);
   const dots = {};
   MAP.routes.forEach((r) => {
-    dots[r.id] = mk('circle', { cx: r.x, cy: r.y, r: 5, class: 'dot' }, gD);
-    const hit = mk('circle', { cx: r.x, cy: r.y, r: 20, class: 'hit' }, gD);
+    dots[r.id] = mk('circle', { cx: r.x, cy: r.y, r: 7, class: 'dot' }, gD);
+    const hit = mk('circle', { cx: r.x, cy: r.y, r: 16, class: 'hit' }, gD);
     hit.addEventListener('click', () => select(r.id));
   });
   const [ox, oy] = MAP.origin;
-  mk('circle', { cx: ox, cy: oy, r: 14, class: 'origin-ring' }, svg);
-  mk('circle', { cx: ox, cy: oy, r: 6.5, class: 'origin' }, svg);
-  const lblO = mk('text', { x: ox + 18, y: oy - 12, class: 'lbl lbl-o' }, svg); lblO.textContent = 'Keskustori';
+  mk('circle', { cx: ox, cy: oy, r: 20, class: 'origin-ring' }, svg);
+  mk('circle', { cx: ox, cy: oy, r: 9, class: 'origin' }, svg);
+  const lblO = mk('text', { x: ox - 26, y: oy + 10, class: 'lbl lbl-o', 'text-anchor': 'end' }, svg); lblO.textContent = 'Tampere';
   const lbl = mk('text', { class: 'lbl' }, svg);
 
   // list
@@ -382,7 +405,7 @@ const area = (() => {
   });
   $('#townMore').addEventListener('click', (e) => { list.classList.add('is-all'); e.currentTarget.hidden = true; });
 
-  let cur = 'Lentoasema';
+  let cur = 'Helsinki Airport';
   function select(id, quiet) {
     const r = routeById[id]; if (!r) return;
     cur = id;
@@ -397,16 +420,16 @@ const area = (() => {
     }
     // label: keep inside the map
     const left = r.x > MAP.w * 0.62;
-    lbl.setAttribute('x', left ? r.x - 14 : r.x + 14);
-    lbl.setAttribute('y', r.y + 7);
+    lbl.setAttribute('x', left ? r.x - 20 : r.x + 20);
+    lbl.setAttribute('y', r.y + (r.id === 'Helsinki' ? 30 : r.id === 'Helsinki Airport' ? -8 : 11));
     lbl.setAttribute('text-anchor', left ? 'end' : 'start');
     lbl.textContent = placeName(id);
     pick(r);
   }
   function pick(r) {
-    $('#tpName').textContent = r.id === 'Lentoasema' ? t('rAirT') : r.id;
+    $('#tpName').textContent = longName(r.id);
     $('#tpKm').textContent = `${km1(r.km)} km`;
-    $('#tpMin').textContent = `${r.min} min`;
+    $('#tpMin').textContent = hm(r.min);
     $('#tpFare').textContent = money(fare({ km: r.km, min: r.min }).total);
   }
   function render() {
@@ -432,13 +455,14 @@ function fleetCopy() {
   $('#fleetText').textContent = t('fleetSedan');
   $('#fleetRate').textContent = num(R.kmSmall);
 }
-const fleetIO = new IntersectionObserver((ents) => {
+// 3D is off: the old model was a generic sedan, and the car is a Kia Ceed Sportswagon. Set fleet3d: true in config.js once media/car.glb exists.
+const fleetIO = CFG.fleet3d && new IntersectionObserver((ents) => {
   if (!ents.some((e) => e.isIntersecting)) return;
   fleetIO.disconnect();
   import('./fleet.js').then((m) => m.initFleet({ canvas: $('#fleetCanvas'), section: $('#fleet'), hint: $('#dragHint'), initial: car }))
         .catch((err) => console.warn('3D unavailable', err));
 }, { rootMargin: '900px 0px' });
-fleetIO.observe($('#fleet'));
+if (fleetIO) { $('#fleetCanvas').hidden = false; $('#dragHint').hidden = false; fleetIO.observe($('#fleet')); }
 
 /* ── Bar, dock, nav highlight ───────────── */
 const bar = $('#bar'), dock = $('#dock');
@@ -488,5 +512,6 @@ if (CFG.email) $$('.contact-email').forEach((a) => { a.hidden = false; a.href = 
 
 /* ── Start ──────────────────────────────── */
 const qs = new URLSearchParams(location.search).get('lang');
-let saved = null; try { saved = localStorage.getItem('averox-lang'); } catch (e) {}
-applyLang(qs || saved || ((navigator.language || '').toLowerCase().startsWith('fi') ? 'fi' : 'en'), Boolean(qs));
+let saved = null; try { saved = localStorage.getItem('averox-lang-v2'); } catch (e) {}
+// Finnish is the primary language. English only when chosen (button or ?lang=en).
+applyLang(qs || saved || 'fi', Boolean(qs));

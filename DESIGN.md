@@ -32,9 +32,9 @@ One light section breaks the dark rhythm. No gradients on surfaces except photo 
 1. **Hero**: full-bleed night photo with the car visible. On desktop the booking form is a wide strip that bridges the hero and the next section; on phones the photo is a top band and the booking card follows the headline.
 2. **Meter**: split. A black meter window with dot-matrix total and a receipt, next to stacked control cards (route chips, sliders, segmented choices).
 3. **Price list**: light section. Sticky heading column, a ledger of huge light numerals, then the worked example as a full-width typographic equation.
-4. **Fleet**: a 3D turntable of the sedan (a mesh made from a photo) under the headline, next to its €/km rate. Sedan only for now.
+4. **Fleet**: a studio photo of the Kia Ceed Sportswagon under the headline, next to its €/km rate (3D turntable code is kept and can be switched back on with a model of the real car).
 5. **Rides**: broken 12-column editorial grid of three photos at different sizes and offsets.
-6. **Area**: lake photo band with parallax, then a real Pirkanmaa map (23 municipalities, OSM road routes) next to a distance list.
+6. **Area**: lake photo band with parallax, then a real map of Finland (19 regions, OSM road routes from Tampere) next to a distance list.
 7. **Closing**: full-bleed roof-sign photo with the last headline.
 
 Nav: thin top bar that turns translucent on scroll; links from 980px; EN/FI pill with a sliding thumb. Phones get a bottom "Book a ride" dock once the hero is gone.

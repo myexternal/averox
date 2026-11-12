@@ -2,7 +2,11 @@
 // Averox site settings. This is the only file the owner needs to edit.
 // ─────────────────────────────────────────────────────────────
 window.AVEROX = {
-  // Booking form delivery. Pick ONE provider and fill in its value.
+  // Booking form delivery. bookingEmail works with no account: the first booking sends an
+  // "Activate Form" email from FormSubmit to this address, and bookings arrive once it is clicked.
+  bookingEmail: "hello@averox.fi",
+  //
+  // Optional instead (used first if filled in): one of these two providers.
   //
   // Web3Forms (free, no account): go to https://web3forms.com, enter the
   // email address that should receive bookings, and paste the access key here.
@@ -12,9 +16,12 @@ window.AVEROX = {
   // endpoint here, e.g. "https://formspree.io/f/abcdwxyz".
   formspreeEndpoint: "",
 
+  // 3D car in the fleet section. Keep false until media/car.glb (a 3D model of the real car) exists.
+  fleet3d: false,
+
   // Contact details. Leave empty to hide the call / email buttons.
   phone: "",          // e.g. "+358 40 123 4567"
-  email: "",          // e.g. "tilaukset@averox.fi"
+  email: "hello@averox.fi",
 
   // Rates (VAT included). Change here and the whole site follows.
   rates: {

@@ -126,7 +126,7 @@ button, [role="radio"], [role="tab"], .btn { user-select: none; -webkit-user-sel
 .lang button { position: relative; z-index: 1; height: 34px; min-width: 42px; border-radius: 999px; font: 600 13px/1 var(--f-text); letter-spacing: .04em; color: var(--fog); transition: color 200ms ease; }
 .lang button[aria-pressed="true"] { color: var(--ink); }
 .lang-thumb { position: absolute; top: 3px; bottom: 3px; left: 3px; width: calc(50% - 3px); border-radius: 999px; background: var(--snow); transition: transform 280ms var(--ease-drawer); }
-.lang[data-on="fi"] .lang-thumb { transform: translateX(100%); }
+.lang[data-on="en"] .lang-thumb { transform: translateX(100%); } /* FI is first: Finnish is the primary language */
 
 @media (min-width: 980px) { .links { display: flex; } }
 @media (max-width: 420px) {
@@ -155,7 +155,7 @@ button, [role="radio"], [role="tab"], .btn { user-select: none; -webkit-user-sel
   display: grid; gap: 40px; align-items: end;
 }
 .hero-kicker { margin: 0 0 18px; font-weight: 600; font-size: 14px; letter-spacing: .02em; color: var(--amber); }
-.hero h1 { max-width: 11ch; }
+.hero h1 { max-width: 14ch; text-wrap: balance; }
 .hero-shade { overflow: hidden; }
 .hero-sub { margin: 26px 0 0; color: var(--fog); max-width: 38ch; font-size: clamp(1.02rem, 1.25vw, 1.15rem); }
 .facts { display: flex; flex-wrap: wrap; gap: 14px 40px; margin: 40px 0 0; padding: 22px 0 0; border-top: 1px solid var(--line); }
@@ -173,7 +173,7 @@ button, [role="radio"], [role="tab"], .btn { user-select: none; -webkit-user-sel
 @media (max-width: 1099px) {
   .hero { display: block; min-height: 0; }
   .hero-photo, .hero-shade { bottom: auto; height: min(80svh, 780px); }
-  .hero-photo img { object-position: 50% 50%; }
+  .hero-photo img { object-position: 50% 85%; } /* lift the car above the headline on short phones */
   .hero-shade { background: linear-gradient(0deg, var(--asphalt) 0%, rgba(11,12,14,.75) 18%, rgba(11,12,14,0) 52%), linear-gradient(180deg, rgba(11,12,14,.65) 0%, rgba(11,12,14,0) 20%); }
   .hero-grid { padding-top: calc(min(80svh, 780px) - 110px); padding-bottom: 8px; }
   .facts { gap: 12px 28px; }
@@ -284,7 +284,14 @@ button, [role="radio"], [role="tab"], .btn { user-select: none; -webkit-user-sel
 .sec-head { display: grid; gap: 22px; margin-bottom: clamp(44px, 6vw, 80px); }
 @media (min-width: 900px) { .sec-head { grid-template-columns: 1fr auto; align-items: end; } }
 .meter { display: grid; gap: 20px; }
-@media (min-width: 1000px) { .meter { grid-template-columns: 1.08fr 1fr; gap: 28px; } }
+/* Phones: controls first, then the fare readout right above "Book this ride". Desktop: readout left, controls + button right. */
+.meter > .controls { order: 1; } .meter > .readout { order: 2; } .meter > #meterBook { order: 3; }
+@media (min-width: 1000px) {
+  .meter { grid-template-columns: 1.08fr 1fr; grid-template-rows: auto 1fr; gap: 28px; }
+  .meter > .readout { grid-column: 1; grid-row: 1 / span 2; }
+  .meter > .controls { grid-column: 2; grid-row: 1; }
+  .meter > #meterBook { grid-column: 2; grid-row: 2; align-self: start; margin-top: -14px; }
+}
 
 .readout {
   position: relative; overflow: hidden; align-self: start;
@@ -374,8 +381,12 @@ input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px 
 .fleet-stage { position: relative; width: 100%; height: clamp(300px, 44vw, 620px); margin-top: clamp(8px, 2vw, 24px); }
 #fleetCanvas { width: 100%; height: 100%; cursor: grab; touch-action: pan-y; }
 #fleetCanvas.is-drag { cursor: grabbing; }
-.fleet-fallback { position: absolute; inset: 0; margin: auto; width: min(80%, 900px); height: auto; object-fit: contain; opacity: .9; mix-blend-mode: lighten; pointer-events: none; transition: opacity 400ms ease; }
+.fleet-fallback { position: absolute; inset: 0; margin: auto; width: min(92%, 1180px); height: 100%; object-fit: contain; mix-blend-mode: lighten; pointer-events: none; transition: opacity 400ms ease;
+  -webkit-mask-image: radial-gradient(ellipse 70% 72% at 50% 52%, #000 62%, transparent 100%); mask-image: radial-gradient(ellipse 70% 72% at 50% 52%, #000 62%, transparent 100%); }
 .fleet.has-3d .fleet-fallback { opacity: 0; }
+/* Photo mode (no 3D): the car sits below the copy instead of tucking under it. */
+.fleet:not(.has-3d) .fleet-stage { margin-top: clamp(8px, 2vw, 28px); height: clamp(240px, 46vw, 640px); }
+@media (min-width: 900px) { .fleet:not(.has-3d) .fleet-stage { margin-top: -70px; } }
 .drag-hint { position: absolute; left: 50%; bottom: 4%; translate: -50% 0; margin: 0; display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--slush); transition: opacity 400ms ease; }
 .drag-hint svg { width: 40px; height: 12px; }
 .fleet:not(.has-3d) .drag-hint, .drag-hint.is-gone { opacity: 0; }
@@ -431,9 +442,11 @@ input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px 
 .area-band-copy { padding-bottom: clamp(24px, 4vw, 48px); }
 .area-grid { display: grid; gap: 48px; margin-top: clamp(32px, 5vw, 64px); }
 @media (min-width: 1000px) { .area-grid { grid-template-columns: 1.15fr 1fr; gap: clamp(48px, 6vw, 96px); align-items: start; } .map-wrap { position: sticky; top: calc(var(--bar-h) + 24px); } }
-.map { width: 100%; height: auto; overflow: visible; }
+.map { display: block; width: 100%; height: auto; max-height: calc(100svh - var(--bar-h) - 90px); overflow: visible; }
 .map .muni { fill: var(--kerb); stroke: rgba(242,241,237,.16); stroke-width: 1; vector-effect: non-scaling-stroke; cursor: pointer; transition: fill 200ms ease; }
-.map .muni.is-on { fill: #20242a; }
+.map .muni.is-home { fill: #1d2025; }
+.map .muni.is-off { cursor: default; }
+.map .muni.is-on { fill: #262b32; }
 @media (hover: hover) and (pointer: fine) { .map .muni:hover { fill: #1b1f24; } }
 .map .outline { fill: none; stroke: rgba(242,241,237,.45); stroke-width: 1.4; vector-effect: non-scaling-stroke; pointer-events: none; }
 .map .rt { fill: none; stroke: rgba(255,159,28,.16); stroke-width: 1.2; vector-effect: non-scaling-stroke; pointer-events: none; }
@@ -443,8 +456,8 @@ input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px 
 .map .hit { fill: transparent; cursor: pointer; }
 .map .origin { fill: var(--amber); }
 .map .origin-ring { fill: none; stroke: var(--amber); stroke-width: 1.5; vector-effect: non-scaling-stroke; opacity: .6; }
-.map .lbl { font: 600 22px var(--f-text); fill: var(--snow); paint-order: stroke; stroke: var(--asphalt); stroke-width: 6px; stroke-linejoin: round; pointer-events: none; }
-.map .lbl-o { fill: var(--amber); font-size: 19px; }
+.map .lbl { font: 600 34px var(--f-text); fill: var(--snow); paint-order: stroke; stroke: var(--asphalt); stroke-width: 6px; stroke-linejoin: round; pointer-events: none; }
+.map .lbl-o { fill: var(--amber); font-size: 30px; }
 .map-credit { margin: 10px 0 0; font-size: 12px; color: #6c7178; }
 
 .towns { display: grid; gap: 22px; }
@@ -489,7 +502,8 @@ input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px 
 .dock {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
   padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
-  background: linear-gradient(0deg, rgba(11,12,14,.96) 30%, rgba(11,12,14,0));
+  /* Solid colour on purpose: Safari 26 tints its toolbar from the fixed element at the bottom edge. A gradient left the amber button as the sample. */
+  background-color: var(--asphalt); border-top: 1px solid var(--line);
   transform: translateY(110%); transition: transform 360ms var(--ease-drawer);
   pointer-events: none;
 }

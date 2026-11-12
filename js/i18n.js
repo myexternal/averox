@@ -4,11 +4,11 @@ export const T = {
     skip: "Skip to booking",
     markSub: "taxi",
     navFares: "Fares", navPrices: "Prices", navFleet: "Fleet", navArea: "Area", navBook: "Book a ride",
-    heroKicker: "Taxi · Pirkanmaa",
-    heroLt: "Anywhere in Pirkanmaa.",
+    heroKicker: "Taxi · Tampere",
+    heroLt: "From Tampere to all of Finland.",
     heroBd: "Booked in a minute.",
-    heroSub: "One clear price list for the whole region. Send your trip and Averox confirms the ride with you.",
-    factStart: "starting fee, weekdays 07–18", factSeats: "passengers per car", factTowns: "municipalities",
+    heroSub: "One clear price list, from a ride across town to Helsinki Airport. Send your trip and Averox confirms the ride with you.",
+    factStart: "starting fee, weekdays 07–18", factSeats: "passengers per car", factTowns: "regions of Finland",
 
     bookTitle: "Book a ride", stepTrip: "Trip", stepYou: "Contact",
     fFrom: "From", fTo: "To", phAddress: "Street address or place", swap: "Swap from and to",
@@ -35,7 +35,7 @@ export const T = {
     dist: "Distance", dur: "Duration", whenDay: "Weekday 07–18", whenOther: "Other times",
     meterBook: "Book this ride",
 
-    pricesLt: "One price list.", pricesBd: "All of Pirkanmaa.",
+    pricesLt: "One price list.", pricesBd: "All of Finland.",
     pricesIntro: "The price of a taxi trip within Averox's service area is made up of a starting fee, a per-kilometre charge and a per-minute charge. The same rates apply across the whole service area.",
     lgStart: "Starting fee", lgDay: "Weekdays 07–18", lgOther: "Other times",
     lgKm: "Per kilometre", lgSmall: "1–4 passengers", lgLarge: "5–8 passengers",
@@ -44,9 +44,9 @@ export const T = {
     exCap: "Example trip: a weekday at 12:00, 1–4 passengers, 10 km, 15 minutes.",
     exStart: "starting fee", exTotal: "total",
 
-    fleetLt: "One sedan.", fleetBd: "Four seats.",
+    fleetLt: "One estate car.", fleetBd: "Four seats.",
     carSedan: "Sedan", carVan: "Van",
-    fleetSedan: "For everyday rides, airport runs and nights out. Up to four passengers.",
+    fleetSedan: "A 2026 Kia Ceed Sportswagon. Everyday rides, airport runs and nights out, with room for the luggage. Up to four passengers.",
     fleetVan: "For groups, families and big luggage. Up to eight passengers.",
     dragHint: "Drag to turn", fleetAria: "3D model of the car. Drag to turn it.",
 
@@ -59,27 +59,27 @@ export const T = {
     rGoodsT: "Goods and parcels",
     rGoodsP: "We carry goods as well as people. Goods transport prices include 25.5 % VAT.",
 
-    areaLt: "All of Pirkanmaa.", areaBd: "23 municipalities.",
-    areaLede: "From Tampere to Virrat, from Kuhmoinen to Punkalaidun. Pick a place to see the road distance from Keskustori and a weekday estimate.",
+    areaLt: "All of Finland.", areaBd: "19 regions.",
+    areaLede: "From Tampere to Helsinki Airport, Turku, Oulu or Rovaniemi. Pick a place to see the road distance from Keskustori and a weekday estimate.",
     tpUse: "Open in the estimator", townMore: "Show all places",
     areaFine: "Distances and drive times without traffic, from OpenStreetMap data. Estimates are for weekdays 07–18 with 1–4 passengers.",
     mapCredit: "Borders: Statistics Finland. Roads: © OpenStreetMap contributors.",
-    mapAria: "Map of Pirkanmaa with its 23 municipalities",
-    Lentoasema: "Airport",
+    mapAria: "Map of Finland with its 19 regions and road routes from Tampere",
+    Lentoasema: "Tampere Airport", hkiAir: "Helsinki Airport", hkiAirT: "Helsinki Airport (Helsinki-Vantaa)",
 
     ctaLt: "Where to", ctaBd: "next?", call: "Call",
-    footLine: "Taxi across Pirkanmaa. Prices include VAT."
+    footLine: "Taxi from Tampere to anywhere in Finland. Prices include VAT."
   },
 
   fi: {
     skip: "Siirry tilaukseen",
     markSub: "taksi",
     navFares: "Hinta-arvio", navPrices: "Hinnasto", navFleet: "Autot", navArea: "Alue", navBook: "Tilaa kyyti",
-    heroKicker: "Taksi · Pirkanmaa",
-    heroLt: "Minne vain Pirkanmaalla.",
+    heroKicker: "Taksi · Tampere",
+    heroLt: "Tampereelta koko Suomeen.",
     heroBd: "Tilattu minuutissa.",
-    heroSub: "Yksi selkeä hinnasto koko maakuntaan. Lähetä matkan tiedot, niin Averox vahvistaa kyydin kanssasi.",
-    factStart: "aloitusmaksu arkisin klo 7–18", factSeats: "matkustajaa autossa", factTowns: "kuntaa",
+    heroSub: "Yksi selkeä hinnasto kaupunkiajosta Helsinki-Vantaalle asti. Lähetä matkan tiedot, niin Averox vahvistaa kyydin kanssasi.",
+    factStart: "aloitusmaksu arkisin klo 7–18", factSeats: "matkustajaa autossa", factTowns: "maakuntaa",
 
     bookTitle: "Tilaa kyyti", stepTrip: "Matka", stepYou: "Yhteystiedot",
     fFrom: "Mistä", fTo: "Minne", phAddress: "Katuosoite tai paikka", swap: "Vaihda lähtö ja määränpää",
@@ -106,7 +106,7 @@ export const T = {
     dist: "Matka", dur: "Kesto", whenDay: "Arkisin 7–18", whenOther: "Muina aikoina",
     meterBook: "Tilaa tämä kyyti",
 
-    pricesLt: "Yksi hinnasto.", pricesBd: "Koko Pirkanmaa.",
+    pricesLt: "Yksi hinnasto.", pricesBd: "Koko Suomi.",
     pricesIntro: "Taksimatkan hinta Averoxin palvelualueella koostuu lähtömaksusta sekä kilometri- ja minuuttiveloituksesta. Yhtenäiset hinnat ovat voimassa koko Averoxin palvelualueella.",
     lgStart: "Aloitusmaksu", lgDay: "Arkisin klo 7–18", lgOther: "Muina aikoina",
     lgKm: "Kilometriveloitus", lgSmall: "1–4 henkilölle", lgLarge: "5–8 henkilölle",
@@ -115,9 +115,9 @@ export const T = {
     exCap: "Esimerkkimatka: arkipäivänä klo 12, 1–4 matkustajaa, 10 km, 15 minuuttia.",
     exStart: "aloitusmaksu", exTotal: "yhteensä",
 
-    fleetLt: "Yksi henkilöauto.", fleetBd: "Neljä paikkaa.",
+    fleetLt: "Yksi farmari.", fleetBd: "Neljä paikkaa.",
     carSedan: "Henkilöauto", carVan: "Tila-auto",
-    fleetSedan: "Arkimatkoille, lentokentälle ja illanviettoon. Enintään neljä matkustajaa.",
+    fleetSedan: "Kia Ceed Sportswagon 2026. Arkimatkoille, lentokentälle ja illanviettoon, ja matkatavaroillekin on tilaa. Enintään neljä matkustajaa.",
     fleetVan: "Ryhmille, perheille ja isoille matkatavaroille. Enintään kahdeksan matkustajaa.",
     dragHint: "Käännä vetämällä", fleetAria: "Auton 3D-malli. Käännä vetämällä.",
 
@@ -130,15 +130,15 @@ export const T = {
     rGoodsT: "Tavarat ja paketit",
     rGoodsP: "Kuljetamme ihmisten lisäksi myös tavaraa. Tavarakuljetusten hinnat sisältävät alv 25,5 %.",
 
-    areaLt: "Koko Pirkanmaa.", areaBd: "23 kuntaa.",
-    areaLede: "Tampereelta Virroille ja Kuhmoisista Punkalaitumelle. Valitse paikka, niin näet ajomatkan Keskustorilta ja arvion arkipäivän hinnasta.",
+    areaLt: "Koko Suomi.", areaBd: "19 maakuntaa.",
+    areaLede: "Tampereelta Helsinki-Vantaalle, Turkuun, Ouluun tai Rovaniemelle. Valitse paikka, niin näet ajomatkan Keskustorilta ja arvion arkipäivän hinnasta.",
     tpUse: "Avaa hinta-arviossa", townMore: "Näytä kaikki paikat",
     areaFine: "Ajomatkat ja -ajat ilman ruuhkaa OpenStreetMap-aineiston mukaan. Arviot arkipäivälle klo 7–18 ja 1–4 matkustajalle.",
     mapCredit: "Rajat: Tilastokeskus. Tiet: © OpenStreetMapin tekijät.",
-    mapAria: "Pirkanmaan kartta ja sen 23 kuntaa",
-    Lentoasema: "Lentoasema",
+    mapAria: "Suomen kartta: 19 maakuntaa ja reitit Tampereelta",
+    Lentoasema: "Tampereen lentoasema", hkiAir: "Helsinki-Vantaa", hkiAirT: "Helsinki-Vantaan lentoasema",
 
     ctaLt: "Minne", ctaBd: "seuraavaksi?", call: "Soita",
-    footLine: "Taksi koko Pirkanmaalla. Hinnat sisältävät arvonlisäveron."
+    footLine: "Taksi Tampereelta minne päin Suomea tahansa. Hinnat sisältävät arvonlisäveron."
   }
 };

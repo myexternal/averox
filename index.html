@@ -1,18 +1,20 @@
 <!doctype html>
-<html lang="en">
+<html lang="fi">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
-<title>Averox · Taxi in Pirkanmaa</title>
-<meta name="description" content="Averox taxi across Pirkanmaa. Book a ride online, see the price list and estimate your fare before you go. Starting fee from €6.00.">
+<title>Averox · Taksi Tampereelta koko Suomeen</title>
+<meta name="description" content="Averox-taksi Tampereelta minne päin Suomea tahansa, myös Helsinki-Vantaalle. Tilaa kyyti verkossa, katso hinnasto ja laske hinta-arvio etukäteen. Aloitusmaksu alkaen 6,00 €.">
 <meta name="theme-color" content="#0b0c0e">
 <meta name="color-scheme" content="dark">
 <link rel="icon" href="media/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="media/apple-touch-icon.png">
 <!-- Replace the domain below once the site has its final address. Share previews need an absolute URL. -->
 <meta property="og:type" content="website">
-<meta property="og:title" content="Averox · Taxi in Pirkanmaa">
-<meta property="og:description" content="Book a ride, see the prices and estimate your fare. Uniform rates across all of Pirkanmaa.">
+<meta property="og:locale" content="fi_FI">
+<meta property="og:locale:alternate" content="en_GB">
+<meta property="og:title" content="Averox · Taksi Tampereelta koko Suomeen">
+<meta property="og:description" content="Tilaa kyyti, katso hinnat ja laske hinta-arvio. Tampereelta minne päin Suomea tahansa, myös Helsinki-Vantaalle.">
 <meta property="og:image" content="https://averox.onrender.com/media/share.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -27,25 +29,25 @@
 </head>
 <body>
 
-<a class="skip" href="#book" data-i18n="skip">Skip to booking</a>
+<a class="skip" href="#book" data-i18n="skip">Siirry tilaukseen</a>
 
 <header class="bar" id="bar">
   <a class="mark" href="#top" aria-label="Averox, back to top">
-    <span class="mark-b">AVEROX</span><span class="mark-l" data-i18n="markSub">taxi</span>
+    <span class="mark-b">AVEROX</span><span class="mark-l" data-i18n="markSub">taksi</span>
   </a>
   <nav class="links" aria-label="Sections">
-    <a href="#fares" data-i18n="navFares">Fares</a>
-    <a href="#prices" data-i18n="navPrices">Prices</a>
-    <a href="#fleet" data-i18n="navFleet">Fleet</a>
-    <a href="#area" data-i18n="navArea">Area</a>
+    <a href="#fares" data-i18n="navFares">Hinta-arvio</a>
+    <a href="#prices" data-i18n="navPrices">Hinnasto</a>
+    <a href="#fleet" data-i18n="navFleet">Autot</a>
+    <a href="#area" data-i18n="navArea">Alue</a>
   </nav>
   <div class="bar-end">
     <div class="lang" role="group" aria-label="Language / Kieli">
-      <button type="button" data-lang="en" aria-pressed="true">EN</button>
-      <button type="button" data-lang="fi" aria-pressed="false">FI</button>
+      <button type="button" data-lang="fi" aria-pressed="true">FI</button>
+      <button type="button" data-lang="en" aria-pressed="false">EN</button>
       <span class="lang-thumb" aria-hidden="true"></span>
     </div>
-    <a class="btn btn-amber btn-sm" href="#book" data-i18n="navBook">Book a ride</a>
+    <a class="btn btn-amber btn-sm" href="#book" data-i18n="navBook">Tilaa kyyti</a>
   </div>
 </header>
 
@@ -61,26 +63,26 @@
 
   <div class="hero-grid">
     <div class="hero-copy">
-      <p class="hero-kicker" data-i18n="heroKicker">Taxi · Pirkanmaa</p>
+      <p class="hero-kicker" data-i18n="heroKicker">Taksi · Tampere</p>
       <h1 class="display">
-        <span class="lt" data-i18n="heroLt">Anywhere in Pirkanmaa.</span>
-        <span class="bd" data-i18n="heroBd">Booked in a minute.</span>
+        <span class="lt" data-i18n="heroLt">Tampereelta koko Suomeen.</span>
+        <span class="bd" data-i18n="heroBd">Tilattu minuutissa.</span>
       </h1>
-      <p class="hero-sub" data-i18n="heroSub">One clear price list for the whole region. Send your trip and Averox confirms the ride with you.</p>
+      <p class="hero-sub" data-i18n="heroSub">Yksi selkeä hinnasto kaupunkiajosta Helsinki-Vantaalle asti. Lähetä matkan tiedot, niin Averox vahvistaa kyydin kanssasi.</p>
       <dl class="facts">
-        <div><dt data-money="startDay">€6.00</dt><dd data-i18n="factStart">starting fee, weekdays 07–18</dd></div>
-        <div><dt>1–4</dt><dd data-i18n="factSeats">passengers per car</dd></div>
-        <div><dt>23</dt><dd data-i18n="factTowns">municipalities</dd></div>
+        <div><dt data-money="startDay">€6.00</dt><dd data-i18n="factStart">aloitusmaksu arkisin klo 7–18</dd></div>
+        <div><dt>1–4</dt><dd data-i18n="factSeats">matkustajaa autossa</dd></div>
+        <div><dt>19</dt><dd data-i18n="factTowns">maakuntaa</dd></div>
       </dl>
     </div>
 
     <!-- Booking card -->
     <div class="book" id="book">
       <div class="book-head">
-        <h2 data-i18n="bookTitle">Book a ride</h2>
+        <h2 data-i18n="bookTitle">Tilaa kyyti</h2>
         <ol class="steps" aria-hidden="true">
-          <li class="is-on"><span>1</span> <b data-i18n="stepTrip">Trip</b></li>
-          <li><span>2</span> <b data-i18n="stepYou">Contact</b></li>
+          <li class="is-on"><span>1</span> <b data-i18n="stepTrip">Matka</b></li>
+          <li><span>2</span> <b data-i18n="stepYou">Yhteystiedot</b></li>
         </ol>
       </div>
 
@@ -89,71 +91,71 @@
         <div class="panes">
           <!-- Step 1 -->
           <fieldset class="pane is-on" data-step="1">
-            <legend class="sr" data-i18n="stepTrip">Trip</legend>
+            <legend class="sr" data-i18n="stepTrip">Matka</legend>
             <div class="route-fields">
               <label class="field">
-                <span data-i18n="fFrom">From</span>
-                <input name="pickup" required autocomplete="street-address" enterkeyhint="next" data-i18n-ph="phAddress" placeholder="Street address or place">
-                <em class="err" data-i18n="errReq">Required</em>
+                <span data-i18n="fFrom">Mistä</span>
+                <input name="pickup" required autocomplete="street-address" enterkeyhint="next" data-i18n-ph="phAddress" placeholder="Katuosoite tai paikka">
+                <em class="err" data-i18n="errReq">Pakollinen tieto</em>
               </label>
-              <button type="button" class="swap" id="swapBtn" aria-label="Swap from and to" data-i18n-aria="swap">
+              <button type="button" class="swap" id="swapBtn" aria-label="Vaihda lähtö ja määränpää" data-i18n-aria="swap">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4v14m0 0-3-3m3 3 3-3M17 20V6m0 0-3 3m3-3 3 3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </button>
               <label class="field">
-                <span data-i18n="fTo">To</span>
-                <input name="destination" required enterkeyhint="next" data-i18n-ph="phAddress" placeholder="Street address or place">
-                <em class="err" data-i18n="errReq">Required</em>
+                <span data-i18n="fTo">Minne</span>
+                <input name="destination" required enterkeyhint="next" data-i18n-ph="phAddress" placeholder="Katuosoite tai paikka">
+                <em class="err" data-i18n="errReq">Pakollinen tieto</em>
               </label>
             </div>
 
-            <div class="seg" role="radiogroup" aria-label="When" data-i18n-aria="fWhen" data-name="when">
-              <button type="button" role="radio" aria-checked="true" data-value="now" data-i18n="whenNow">Now</button>
-              <button type="button" role="radio" aria-checked="false" data-value="later" data-i18n="whenLater">Later</button>
+            <div class="seg" role="radiogroup" aria-label="Milloin" data-i18n-aria="fWhen" data-name="when">
+              <button type="button" role="radio" aria-checked="true" data-value="now" data-i18n="whenNow">Heti</button>
+              <button type="button" role="radio" aria-checked="false" data-value="later" data-i18n="whenLater">Myöhemmin</button>
             </div>
             <div class="when-later" id="whenLater" hidden>
-              <label class="field"><span data-i18n="fDate">Date</span><input type="date" name="date"><em class="err" data-i18n="errPast">Pick a time in the future</em></label>
-              <label class="field"><span data-i18n="fTime">Time</span><input type="time" name="time" step="300"></label>
+              <label class="field"><span data-i18n="fDate">Päivä</span><input type="date" name="date"><em class="err" data-i18n="errPast">Valitse tuleva ajankohta</em></label>
+              <label class="field"><span data-i18n="fTime">Aika</span><input type="time" name="time" step="300"></label>
             </div>
 
             <div class="field-row">
-              <span class="field-label" id="paxLabel" data-i18n="fPax">Passengers</span>
+              <span class="field-label" id="paxLabel" data-i18n="fPax">Matkustajat</span>
               <div class="seg" role="radiogroup" aria-labelledby="paxLabel" data-name="pax">
                 <button type="button" role="radio" aria-checked="true" data-value="1-4">1–4</button>
-                <button type="button" role="radio" aria-checked="false" data-value="goods" data-i18n="paxGoods">Goods</button>
+                <button type="button" role="radio" aria-checked="false" data-value="goods" data-i18n="paxGoods">Tavaraa</button>
               </div>
             </div>
 
-            <p class="book-fee"><span data-i18n="feeNow">Starting fee at this time</span> <b id="bookFee">€6.00</b></p>
-            <button type="button" class="btn btn-amber btn-wide" id="toStep2"><span data-i18n="next">Continue</span>
+            <p class="book-fee"><span data-i18n="feeNow">Aloitusmaksu nyt</span> <b id="bookFee">€6.00</b></p>
+            <button type="button" class="btn btn-amber btn-wide" id="toStep2"><span data-i18n="next">Jatka</span>
               <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11m0 0-4-4m4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </button>
           </fieldset>
 
           <!-- Step 2 -->
           <fieldset class="pane" data-step="2" inert>
-            <legend class="sr" data-i18n="stepYou">Contact</legend>
+            <legend class="sr" data-i18n="stepYou">Yhteystiedot</legend>
             <p class="trip-sum" id="tripSum"></p>
-            <label class="field"><span data-i18n="fName">Name</span><input name="name" required autocomplete="name" enterkeyhint="next"><em class="err" data-i18n="errReq">Required</em></label>
+            <label class="field"><span data-i18n="fName">Nimi</span><input name="name" required autocomplete="name" enterkeyhint="next"><em class="err" data-i18n="errReq">Pakollinen tieto</em></label>
             <div class="two">
-              <label class="field"><span data-i18n="fPhone">Phone</span><input name="phone" type="tel" required autocomplete="tel" inputmode="tel" enterkeyhint="next"><em class="err" data-i18n="errPhone">Check the number</em></label>
-              <label class="field"><span><span data-i18n="fEmail">Email</span> <i data-i18n="optional">optional</i></span><input name="email" type="email" autocomplete="email" autocapitalize="none" enterkeyhint="next"><em class="err" data-i18n="errEmail">Check the address</em></label>
+              <label class="field"><span data-i18n="fPhone">Puhelin</span><input name="phone" type="tel" required autocomplete="tel" inputmode="tel" enterkeyhint="next"><em class="err" data-i18n="errPhone">Tarkista numero</em></label>
+              <label class="field"><span><span data-i18n="fEmail">Sähköposti</span> <i data-i18n="optional">vapaaehtoinen</i></span><input name="email" type="email" autocomplete="email" autocapitalize="none" enterkeyhint="next"><em class="err" data-i18n="errEmail">Tarkista osoite</em></label>
             </div>
-            <label class="field"><span data-i18n="fNotes">Notes for the driver</span><textarea name="notes" rows="2" data-i18n-ph="phNotes" placeholder="Flight number, child seat, big luggage…"></textarea></label>
-            <p class="consent" data-i18n="consent">We only use these details to arrange your ride.</p>
+            <label class="field"><span data-i18n="fNotes">Lisätiedot kuljettajalle</span><textarea name="notes" rows="2" data-i18n-ph="phNotes" placeholder="Lennon numero, turvaistuin, isot matkatavarat…"></textarea></label>
+            <p class="consent" data-i18n="consent">Käytämme tietoja vain kyydin järjestämiseen.</p>
             <div class="pane-actions">
-              <button type="button" class="btn btn-ghost" id="backStep1" data-i18n="back">Back</button>
-              <button type="submit" class="btn btn-amber" id="sendBtn"><span data-i18n="send">Send booking</span></button>
+              <button type="button" class="btn btn-ghost" id="backStep1" data-i18n="back">Takaisin</button>
+              <button type="submit" class="btn btn-amber" id="sendBtn"><span data-i18n="send">Lähetä tilaus</span></button>
             </div>
           </fieldset>
 
           <!-- Done -->
           <div class="pane pane-done" data-step="3" inert role="status" aria-live="polite">
             <svg class="done-tick" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="22" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M15 24.5l6 6 12-13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            <h3 data-i18n="doneTitle">Request sent.</h3>
-            <p data-i18n="doneText">Averox will confirm your ride by phone or email.</p>
-            <p class="demo-note" id="demoNote" hidden data-i18n="demoNote">Preview: the form isn't connected yet, so nothing was sent.</p>
-            <p class="send-err" id="sendErr" hidden data-i18n="sendErr">Sending failed. Please try again in a moment.</p>
-            <button type="button" class="btn btn-ghost" id="again" data-i18n="again">Book another ride</button>
+            <h3 data-i18n="doneTitle">Tilaus lähetetty.</h3>
+            <p data-i18n="doneText">Averox vahvistaa kyydin puhelimitse tai sähköpostilla.</p>
+            <p class="demo-note" id="demoNote" hidden data-i18n="demoNote">Esikatselu: lomaketta ei ole vielä kytketty, joten mitään ei lähetetty.</p>
+            <p class="send-err" id="sendErr" hidden data-i18n="sendErr">Lähetys epäonnistui. Yritä hetken päästä uudelleen.</p>
+            <button type="button" class="btn btn-ghost" id="again" data-i18n="again">Tilaa toinen kyyti</button>
           </div>
         </div>
       </form>
@@ -165,47 +167,47 @@
 <section class="meter-sec" id="fares">
   <div class="wrap">
     <header class="sec-head reveal">
-      <h2 class="title"><span class="lt" data-i18n="meterLt">Know the fare</span> <span class="bd" data-i18n="meterBd">before you go.</span></h2>
-      <p class="lede" data-i18n="meterLede">Pick a common route or move the sliders. The estimate is worked out from Averox's own rates.</p>
+      <h2 class="title"><span class="lt" data-i18n="meterLt">Tiedä hinta</span> <span class="bd" data-i18n="meterBd">ennen lähtöä.</span></h2>
+      <p class="lede" data-i18n="meterLede">Valitse tavallinen reitti tai liikuta säätimiä. Arvio lasketaan Averoxin omilla hinnoilla.</p>
     </header>
 
     <div class="meter">
       <div class="readout reveal" aria-live="polite">
-        <p class="readout-label"><span data-i18n="estLabel">Estimated fare</span> <span class="tag" id="exampleTag" data-i18n="exampleTag">Price list example</span></p>
+        <p class="readout-label"><span data-i18n="estLabel">Hinta-arvio</span> <span class="tag" id="exampleTag" data-i18n="exampleTag">Hinnaston esimerkki</span></p>
         <div class="readout-fig" id="fareFig"><output class="readout-num" id="fareOut" for="kmIn minIn">35,75</output><span class="readout-cur">€</span></div>
         <dl class="receipt">
-          <div><dt data-i18n="rcStart">Starting fee</dt><dd id="rcStart">6,00</dd></div>
-          <div><dt><span data-i18n="rcTime">Time</span> <small id="rcTimeCalc">15 min × 1,15</small></dt><dd id="rcTime">17,25</dd></div>
-          <div><dt><span data-i18n="rcDist">Distance</span> <small id="rcDistCalc">10 km × 1,25</small></dt><dd id="rcDist">12,50</dd></div>
+          <div><dt data-i18n="rcStart">Aloitusmaksu</dt><dd id="rcStart">6,00</dd></div>
+          <div><dt><span data-i18n="rcTime">Minuuttiveloitus</span> <small id="rcTimeCalc">15 min × 1,15</small></dt><dd id="rcTime">17,25</dd></div>
+          <div><dt><span data-i18n="rcDist">Kilometriveloitus</span> <small id="rcDistCalc">10 km × 1,25</small></dt><dd id="rcDist">12,50</dd></div>
         </dl>
-        <p class="readout-note" data-i18n="meterNote">An estimate, not a quote. Traffic, the route and waiting time change the final meter price. Includes VAT 14 %.</p>
+        <p class="readout-note" data-i18n="meterNote">Arvio, ei kiinteä hinta. Liikenne, reitti ja odotus vaikuttavat lopulliseen taksamittarin hintaan. Sisältää alv 14 %.</p>
       </div>
 
       <div class="controls reveal">
         <div class="ctl">
-          <p class="ctl-label" data-i18n="routesLabel">From Keskustori</p>
+          <p class="ctl-label" data-i18n="routesLabel">Keskustorilta</p>
           <div class="chips" id="routeChips"></div>
-          <p class="ctl-foot" id="routeFoot" data-i18n="routesFoot">Road distance and drive time without traffic.</p>
+          <p class="ctl-foot" id="routeFoot" data-i18n="routesFoot">Ajomatka ja -aika tieverkkoa pitkin ilman ruuhkaa.</p>
         </div>
         <div class="ctl">
-          <label class="ctl-label" for="kmIn"><span data-i18n="dist">Distance</span> <b><output id="kmVal">10</output> km</b></label>
-          <input type="range" id="kmIn" min="1" max="130" step="0.5" value="10">
+          <label class="ctl-label" for="kmIn"><span data-i18n="dist">Matka</span> <b><output id="kmVal">10</output> km</b></label>
+          <input type="range" id="kmIn" min="0" max="1000" step="1" value="106" aria-valuetext="10 km">
         </div>
         <div class="ctl">
-          <label class="ctl-label" for="minIn"><span data-i18n="dur">Duration</span> <b><output id="minVal">15</output> min</b></label>
-          <input type="range" id="minIn" min="1" max="150" step="1" value="15">
+          <label class="ctl-label" for="minIn"><span data-i18n="dur">Kesto</span> <b><output id="minVal">15</output> min</b></label>
+          <input type="range" id="minIn" min="0" max="1000" step="1" value="146" aria-valuetext="15 min">
         </div>
         <div class="ctl ctl-2">
           <div>
-            <p class="ctl-label" id="mWhenL" data-i18n="fWhen">When</p>
+            <p class="ctl-label" id="mWhenL" data-i18n="fWhen">Milloin</p>
             <div class="seg" role="radiogroup" aria-labelledby="mWhenL" data-name="mwhen">
-              <button type="button" role="radio" aria-checked="true" data-value="day" data-i18n="whenDay">Weekday 07–18</button>
-              <button type="button" role="radio" aria-checked="false" data-value="other" data-i18n="whenOther">Other times</button>
+              <button type="button" role="radio" aria-checked="true" data-value="day" data-i18n="whenDay">Arkisin 7–18</button>
+              <button type="button" role="radio" aria-checked="false" data-value="other" data-i18n="whenOther">Muina aikoina</button>
             </div>
           </div>
         </div>
-        <a class="btn btn-line" href="#book" id="meterBook" data-i18n="meterBook">Book this ride</a>
       </div>
+      <a class="btn btn-line" href="#book" id="meterBook" data-i18n="meterBook">Tilaa tämä kyyti</a>
     </div>
   </div>
 </section>
@@ -215,38 +217,38 @@
   <div class="wrap prices-grid">
    <div class="prices-top">
     <header class="prices-head reveal">
-      <h2 class="title"><span class="lt" data-i18n="pricesLt">One price list.</span> <span class="bd" data-i18n="pricesBd">All of Pirkanmaa.</span></h2>
-      <p data-i18n="pricesIntro">The price of a taxi trip within Averox's service area is made up of a starting fee, a per-kilometre charge and a per-minute charge. The same rates apply across the whole service area.</p>
+      <h2 class="title"><span class="lt" data-i18n="pricesLt">Yksi hinnasto.</span> <span class="bd" data-i18n="pricesBd">Koko Suomi.</span></h2>
+      <p data-i18n="pricesIntro">Taksimatkan hinta Averoxin palvelualueella koostuu lähtömaksusta sekä kilometri- ja minuuttiveloituksesta. Yhtenäiset hinnat ovat voimassa koko Averoxin palvelualueella.</p>
     </header>
 
     <div class="ledger">
       <div class="ledger-group reveal">
-        <h3 data-i18n="lgStart">Starting fee</h3>
-        <div class="ledger-row"><span data-i18n="lgDay">Weekdays 07–18</span><b data-money="startDay">€6.00</b></div>
-        <div class="ledger-row"><span data-i18n="lgOther">Other times</span><b data-money="startOther">€8.50</b></div>
+        <h3 data-i18n="lgStart">Aloitusmaksu</h3>
+        <div class="ledger-row"><span data-i18n="lgDay">Arkisin klo 7–18</span><b data-money="startDay">€6.00</b></div>
+        <div class="ledger-row"><span data-i18n="lgOther">Muina aikoina</span><b data-money="startOther">€8.50</b></div>
       </div>
       <div class="ledger-group reveal">
-        <h3 data-i18n="lgKm">Per kilometre</h3>
-        <div class="ledger-row"><span data-i18n="lgSmall">1–4 passengers</span><b><span data-money="kmSmall">€1.25</span><small>/km</small></b></div>
+        <h3 data-i18n="lgKm">Kilometriveloitus</h3>
+        <div class="ledger-row"><span data-i18n="lgSmall">1–4 henkilölle</span><b><span data-money="kmSmall">€1.25</span><small>/km</small></b></div>
       </div>
       <div class="ledger-group reveal">
-        <h3 data-i18n="lgMin">Per minute</h3>
-        <div class="ledger-row"><span data-i18n="lgAll">All rides</span><b><span data-money="perMin">€1.15</span><small>/min</small></b></div>
+        <h3 data-i18n="lgMin">Minuuttiveloitus</h3>
+        <div class="ledger-row"><span data-i18n="lgAll">Kaikki matkat</span><b><span data-money="perMin">€1.15</span><small>/min</small></b></div>
       </div>
-      <p class="vat reveal" data-i18n="vat">Prices include VAT: 14 % for passenger transport and 25.5 % for goods transport.</p>
+      <p class="vat reveal" data-i18n="vat">Hinnat sisältävät arvonlisäveron: henkilökuljetuksissa 14 % ja tavarakuljetuksissa 25,5 %.</p>
     </div>
    </div>
 
     <div class="example reveal">
-      <p class="example-cap" data-i18n="exCap">Example trip: a weekday at 12:00, 1–4 passengers, 10 km, 15 minutes.</p>
+      <p class="example-cap" data-i18n="exCap">Esimerkkimatka: arkipäivänä klo 12, 1–4 matkustajaa, 10 km, 15 minuuttia.</p>
       <div class="equation">
-        <span class="term"><b data-money="startDay">€6.00</b><small data-i18n="exStart">starting fee</small></span>
+        <span class="term"><b data-money="startDay">€6.00</b><small data-i18n="exStart">aloitusmaksu</small></span>
         <span class="op">+</span>
         <span class="term"><b data-money-calc="15*perMin">€17.25</b><small>15 min × <span data-money="perMin">€1.15</span></small></span>
         <span class="op">+</span>
         <span class="term"><b data-money-calc="10*kmSmall">€12.50</b><small>10 km × <span data-money="kmSmall">€1.25</span></small></span>
         <span class="op">=</span>
-        <span class="term term-total"><b data-money-calc="startDay+15*perMin+10*kmSmall">€35.75</b><small data-i18n="exTotal">total</small></span>
+        <span class="term term-total"><b data-money-calc="startDay+15*perMin+10*kmSmall">€35.75</b><small data-i18n="exTotal">yhteensä</small></span>
       </div>
     </div>
   </div>
@@ -255,43 +257,43 @@
 <!-- ═════════ FLEET (3D) ═════════ -->
 <section class="fleet" id="fleet">
   <div class="wrap fleet-copy">
-    <h2 class="title reveal"><span class="lt" data-i18n="fleetLt">One sedan.</span> <span class="bd" data-i18n="fleetBd">Four seats.</span></h2>
+    <h2 class="title reveal"><span class="lt" data-i18n="fleetLt">Yksi farmari.</span> <span class="bd" data-i18n="fleetBd">Neljä paikkaa.</span></h2>
     <div class="fleet-side reveal">
-      <p class="fleet-text" id="fleetText" data-i18n="fleetSedan">For everyday rides, airport runs and nights out. Up to four passengers.</p>
+      <p class="fleet-text" id="fleetText" data-i18n="fleetSedan">Kia Ceed Sportswagon 2026. Arkimatkoille, lentokentälle ja illanviettoon, ja matkatavaroillekin on tilaa. Enintään neljä matkustajaa.</p>
       <p class="fleet-rate"><b id="fleetRate">1.25</b><span>€/km</span></p>
     </div>
   </div>
   <div class="fleet-stage" id="fleetStage">
-    <canvas id="fleetCanvas" aria-label="3D model of the car. Drag to turn it." data-i18n-aria="fleetAria"></canvas>
-    <img class="fleet-fallback" id="fleetFallback" src="media/sedan-900.webp" alt="" aria-hidden="true">
-    <p class="drag-hint" id="dragHint" aria-hidden="true"><svg viewBox="0 0 40 12"><path d="M2 6h36M2 6l4-4M2 6l4 4M38 6l-4-4m4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg> <span data-i18n="dragHint">Drag to turn</span></p>
+    <canvas id="fleetCanvas" hidden></canvas>
+    <img class="fleet-fallback" id="fleetFallback" src="media/car-1600.webp" srcset="media/car-900.webp 900w, media/car-1600.webp 1600w" sizes="(min-width: 1000px) 70vw, 100vw" alt="A black Kia Ceed Sportswagon estate taxi">
+    <p class="drag-hint" id="dragHint" aria-hidden="true" hidden><svg viewBox="0 0 40 12"><path d="M2 6h36M2 6l4-4M2 6l4 4M38 6l-4-4m4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg> <span data-i18n="dragHint">Käännä vetämällä</span></p>
   </div>
 </section>
 
 <!-- ═════════ RIDES ═════════ -->
 <section class="rides" id="rides">
   <div class="wrap">
-    <h2 class="title reveal"><span class="lt" data-i18n="ridesLt">To the airport, out for the evening,</span> <span class="bd" data-i18n="ridesBd">or a boot full of boxes.</span></h2>
+    <h2 class="title reveal"><span class="lt" data-i18n="ridesLt">Lentokentälle, illanviettoon</span> <span class="bd" data-i18n="ridesBd">tai takakontti täynnä laatikoita.</span></h2>
     <div class="rides-grid">
       <figure class="ride ride-a reveal">
         <div class="ride-img"><img src="media/airport-1168.webp" srcset="media/airport-700.webp 700w, media/airport-1168.webp 1168w" sizes="(min-width: 900px) 56vw, 100vw" alt="A traveller lifting a suitcase from a taxi boot at an airport kerb at dusk" loading="lazy"></div>
         <figcaption>
-          <h3 data-i18n="rAirT">Tampere-Pirkkala airport</h3>
-          <p><span data-i18n="rAirP">About 17.5 km from Keskustori. On a weekday daytime with 1–4 passengers, around</span> <b id="airFare">€52</b>. <span data-i18n="rAirP2">Add your flight number when you book.</span></p>
+          <h3 data-i18n="rAirT">Tampere-Pirkkalan lentoasema</h3>
+          <p><span data-i18n="rAirP">Noin 17,5 km Keskustorilta. Arkipäivisin klo 7–18 ja 1–4 matkustajalla noin</span> <b id="airFare">€52</b>. <span data-i18n="rAirP2">Lisää lennon numero tilaukseen.</span></p>
         </figcaption>
       </figure>
       <figure class="ride ride-b reveal">
         <div class="ride-img"><img src="media/interior-1168.webp" srcset="media/interior-700.webp 700w, media/interior-1168.webp 1168w" sizes="(min-width: 900px) 36vw, 100vw" alt="View from a taxi back seat through a snowy windscreen at city lights" loading="lazy"></div>
         <figcaption>
-          <h3 data-i18n="rEveT">Evenings and weekends</h3>
-          <p data-i18n="rEveP">Outside weekdays 07–18 the starting fee is €8.50. The kilometre and minute rates stay the same.</p>
+          <h3 data-i18n="rEveT">Illat ja viikonloput</h3>
+          <p data-i18n="rEveP">Arkipäivän klo 7–18 ulkopuolella aloitusmaksu on 8,50 €. Kilometri- ja minuuttihinnat pysyvät samoina.</p>
         </figcaption>
       </figure>
       <figure class="ride ride-c reveal">
-        <div class="ride-img"><img src="media/goods-1168.webp" srcset="media/goods-700.webp 700w, media/goods-1168.webp 1168w" sizes="(min-width: 900px) 36vw, 100vw" alt="Parcels being loaded into the boot of a black taxi sedan at night" loading="lazy"></div>
+        <div class="ride-img"><img src="media/goods-1168.webp" srcset="media/goods-700.webp 700w, media/goods-1168.webp 1168w" sizes="(min-width: 900px) 36vw, 100vw" alt="Parcels being loaded into the open tailgate of a black estate taxi at night" loading="lazy"></div>
         <figcaption>
-          <h3 data-i18n="rGoodsT">Goods and parcels</h3>
-          <p data-i18n="rGoodsP">We carry goods as well as people. Goods transport prices include 25.5 % VAT.</p>
+          <h3 data-i18n="rGoodsT">Tavarat ja paketit</h3>
+          <p data-i18n="rGoodsP">Kuljetamme ihmisten lisäksi myös tavaraa. Tavarakuljetusten hinnat sisältävät alv 25,5 %.</p>
         </figcaption>
       </figure>
     </div>
@@ -303,24 +305,24 @@
   <div class="area-band">
     <img src="media/lake-1200.webp" srcset="media/lake-1200.webp 1200w, media/lake-2200.webp 2200w" sizes="100vw" alt="A car driving at dusk on a road between spruce forest and a frozen lake" loading="lazy">
     <div class="wrap area-band-copy">
-      <h2 class="title reveal"><span class="lt" data-i18n="areaLt">All of Pirkanmaa.</span> <span class="bd" data-i18n="areaBd">23 municipalities.</span></h2>
+      <h2 class="title reveal"><span class="lt" data-i18n="areaLt">Koko Suomi.</span> <span class="bd" data-i18n="areaBd">19 maakuntaa.</span></h2>
     </div>
   </div>
   <div class="wrap area-grid">
     <div class="map-wrap reveal">
-      <svg class="map" id="map" role="img" aria-label="Map of Pirkanmaa with its 23 municipalities" data-i18n-aria="mapAria"></svg>
-      <p class="map-credit" data-i18n="mapCredit">Borders: Statistics Finland. Roads: © OpenStreetMap contributors.</p>
+      <svg class="map" id="map" role="img" aria-label="Suomen kartta: 19 maakuntaa ja reitit Tampereelta" data-i18n-aria="mapAria"></svg>
+      <p class="map-credit" data-i18n="mapCredit">Rajat: Tilastokeskus. Tiet: © OpenStreetMapin tekijät.</p>
     </div>
     <div class="towns reveal">
-      <p class="lede" data-i18n="areaLede">From Tampere to Virrat, from Kuhmoinen to Punkalaidun. Pick a place to see the road distance from Keskustori and a weekday estimate.</p>
+      <p class="lede" data-i18n="areaLede">Tampereelta Helsinki-Vantaalle, Turkuun, Ouluun tai Rovaniemelle. Valitse paikka, niin näet ajomatkan Keskustorilta ja arvion arkipäivän hinnasta.</p>
       <div class="town-pick" id="townPick" aria-live="polite">
         <p class="tp-name" id="tpName">Tampere-Pirkkala airport</p>
         <p class="tp-meta"><span id="tpKm">17.5 km</span> · <span id="tpMin">21 min</span> · <b id="tpFare">€52.03</b></p>
-        <button type="button" class="btn btn-line btn-sm" id="tpUse" data-i18n="tpUse">Open in the estimator</button>
+        <button type="button" class="btn btn-line btn-sm" id="tpUse" data-i18n="tpUse">Avaa hinta-arviossa</button>
       </div>
       <ul class="town-list" id="townList"></ul>
-      <button type="button" class="more" id="townMore" data-i18n="townMore">Show all places</button>
-      <p class="fine" data-i18n="areaFine">Distances and drive times without traffic, from OpenStreetMap data. Estimates are for weekdays 07–18 with 1–4 passengers.</p>
+      <button type="button" class="more" id="townMore" data-i18n="townMore">Näytä kaikki paikat</button>
+      <p class="fine" data-i18n="areaFine">Ajomatkat ja -ajat ilman ruuhkaa OpenStreetMap-aineiston mukaan. Arviot arkipäivälle klo 7–18 ja 1–4 matkustajalle.</p>
     </div>
   </div>
 </section>
@@ -329,10 +331,10 @@
 <section class="cta" id="cta">
   <img class="cta-photo" src="media/sign-1344.webp" srcset="media/sign-800.webp 800w, media/sign-1344.webp 1344w" sizes="100vw" alt="" loading="lazy">
   <div class="wrap cta-in reveal">
-    <h2 class="display"><span class="lt" data-i18n="ctaLt">Where to</span> <span class="bd" data-i18n="ctaBd">next?</span></h2>
+    <h2 class="display"><span class="lt" data-i18n="ctaLt">Minne</span> <span class="bd" data-i18n="ctaBd">seuraavaksi?</span></h2>
     <div class="cta-actions">
-      <a class="btn btn-amber" href="#book" data-i18n="navBook">Book a ride</a>
-      <a class="btn btn-line contact-phone" hidden href="#"><span data-i18n="call">Call</span> <span class="v"></span></a>
+      <a class="btn btn-amber" href="#book" data-i18n="navBook">Tilaa kyyti</a>
+      <a class="btn btn-line contact-phone" hidden href="#"><span data-i18n="call">Soita</span> <span class="v"></span></a>
     </div>
   </div>
 </section>
@@ -343,7 +345,7 @@
   <div class="wrap foot-in">
     <p class="foot-mark" aria-hidden="true"><span class="mark-b">AVEROX</span></p>
     <div class="foot-cols">
-      <p data-i18n="footLine">Taxi across Pirkanmaa. Prices include VAT.</p>
+      <p data-i18n="footLine">Taksi Tampereelta minne päin Suomea tahansa. Hinnat sisältävät arvonlisäveron.</p>
       <p class="foot-contact">
         <a class="contact-phone" hidden href="#"><span class="v"></span></a>
         <a class="contact-email" hidden href="#"><span class="v"></span></a>
@@ -355,7 +357,7 @@
 
 <!-- Phone: floating book bar after the hero -->
 <div class="dock" id="dock" aria-hidden="true">
-  <a class="btn btn-amber btn-wide" href="#book" tabindex="-1" data-i18n="navBook">Book a ride</a>
+  <a class="btn btn-amber btn-wide" href="#book" tabindex="-1" data-i18n="navBook">Tilaa kyyti</a>
 </div>
 
 <script type="module" src="js/app.js"></script>
