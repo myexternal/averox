@@ -121,30 +121,154 @@ const booking = (() => {
     if (!y || hh === undefined || Number.isNaN(hh)) return null;
     return new Date(y, m - 1, d, hh, mm || 0);
   }
-  /* ── Live estimate from the two addresses ──
-     Geocoding: OpenStreetMap Nominatim, biased to Pirkanmaa, one request at a time with a 1.1 s gap (its usage policy),
-     only after typing pauses or the field is left, and cached. Route: OSRM driving distance and time, no traffic. */
+  /* ── Address suggestions + live estimate ──
+     Addresses: with CFG.geoProxy, Digitransit autocomplete (Finnish national address data + OSM) through Averox's own
+     Cloudflare Worker, which holds the key (never in the browser), suggested as you type.
+     Without a key, OpenStreetMap Nominatim, asked only after typing pauses, one request at a time at least 1.1 s apart, cached
+     (its usage policy does not allow per-keystroke autocomplete). Route: OSRM driving distance and time, no traffic. */
   const est = { state: 'idle', km: 0, min: 0, from: null, to: null, total: null };
+  const AC = { pickup: null, destination: null };            // resolved place per field: { lat, lon, main, sub, q }
+  const FST = { pickup: 'idle', destination: 'idle' };       // field state: idle | busy | found | miss
+  const PROXY = (CFG.geoProxy || '').trim().replace(/\/+$/, '');
+  let digiOn = Boolean(PROXY);
   const geoCache = new Map(), routeCache = new Map();
   let geoQueue = Promise.resolve(), lastGeo = 0, estSeq = 0;
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-  function geocode(q) {
-    const key = q.toLowerCase();
-    if (geoCache.has(key)) return geoCache.get(key);
-    const run = async (query) => {
-      const wait = 1100 - (Date.now() - lastGeo); if (wait > 0) await sleep(wait);
-      lastGeo = Date.now();
-      const u = 'https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=fi&viewbox=22.8,62.4,25.0,60.9&accept-language=fi&q=' + encodeURIComponent(query);
-      const r = await fetch(u, { headers: { Accept: 'application/json' } });
-      if (!r.ok) throw new Error('geo ' + r.status);
-      const j = await r.json();
-      return j[0] ? { lat: +j[0].lat, lon: +j[0].lon, name: j[0].display_name.split(',').slice(0, 3).join(',').trim() } : null;
-    };
-    const p = (geoQueue = geoQueue.catch(() => {}).then(async () => (await run(q)) || (/\d|tampere/i.test(q) ? null : run(q + ', Tampere'))));
-    geoCache.set(key, p);
-    p.catch(() => geoCache.delete(key));
-    return p;
+  const label = (p) => [p.main, p.sub].filter(Boolean).join(', ');
+
+  function fromNominatim(j) {
+    const a = j.address || {};
+    const town = a.city || a.town || a.village || a.municipality || a.hamlet || '';
+    const street = a.road ? `${a.road}${a.house_number ? ' ' + a.house_number : ''}` : '';
+    const area = a.suburb || a.neighbourhood || a.quarter || '';
+    const place = [a.postcode, town].filter(Boolean).join(' ');
+    // A named place (shop, hotel, airport) shows its name first and its street below; an address shows the street first.
+    const named = j.name && j.name !== a.road && j.name !== town;
+    const main = named ? j.name : (street || j.name || j.display_name.split(',')[0]);
+    const sub = [named ? street : '', area && area !== main ? area : '', place].filter(Boolean).join(', ');
+    return { lat: +j.lat, lon: +j.lon, main, sub };
   }
+  const uniq = (l) => l.filter((p, i) => l.findIndex((q) => q.main === p.main && q.sub === p.sub) === i);
+  function fromDigitransit(ft) {
+    const p = ft.properties || {};
+    const [lon, lat] = ft.geometry.coordinates;
+    const main = p.name || (p.label || '').split(',')[0];
+    let sub = p.label && p.label.startsWith(main) ? p.label.slice(main.length).replace(/^,\s*/, '') : (p.locality || p.localadmin || '');
+    if (p.postalcode && !sub.includes(String(p.postalcode))) sub = `${p.postalcode} ${sub}`.trim();
+    return { lat, lon, main, sub };
+  }
+  async function askNominatim(query) {
+    const wait = 1100 - (Date.now() - lastGeo); if (wait > 0) await sleep(wait);
+    lastGeo = Date.now();
+    const u = 'https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=5&countrycodes=fi&viewbox=22.8,62.4,25.0,60.9&accept-language=fi&q=' + encodeURIComponent(query);
+    const r = await fetch(u, { headers: { Accept: 'application/json' } });
+    if (!r.ok) throw new Error('geo ' + r.status);
+    return uniq((await r.json()).map(fromNominatim));
+  }
+  async function askDigitransit(query) {
+    const r = await fetch(`${PROXY}/?lang=fi&text=${encodeURIComponent(query)}`);
+    if (!r.ok) throw new Error('geo ' + r.status);
+    return uniq(((await r.json()).features || []).map(fromDigitransit)).slice(0, 6);
+  }
+  // A list of matches for what was typed (cached, so suggestions and the estimate share requests).
+  // full=true is the final lookup for the price: if Digitransit has nothing (it misses some names, e.g. "Tampereen
+  // lentoasema"), OpenStreetMap gets one try. Suggestions-as-you-type never use OpenStreetMap while the Worker works,
+  // because its rules don't allow per-keystroke requests.
+  const cached = (key, make) => {
+    if (!geoCache.has(key)) { const p = make(); geoCache.set(key, p); p.catch(() => geoCache.delete(key)); }
+    return geoCache.get(key);
+  };
+  const osm = (q) => cached('osm:' + q.toLowerCase(), () => (geoQueue = geoQueue.catch(() => {}).then(async () => {
+    const l = await askNominatim(q);
+    return l.length || /\d|tampere/i.test(q) ? l : askNominatim(q + ', Tampere');
+  })));
+  function lookup(q, full = false) {
+    if (!digiOn) return osm(q);
+    // If the Worker fails (blocked, limit reached, down), fall back to OpenStreetMap for the rest of the visit.
+    const digi = cached('digi:' + q.toLowerCase(), () => askDigitransit(q)).catch(() => { digiOn = false; return osm(q); });
+    return full ? digi.then((l) => (l.length || !digiOn ? l : osm(q))) : digi;
+  }
+
+  // Field status line under each address: searching / the address found / not found.
+  const PIN = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 15s5-4.6 5-8.6A5 5 0 0 0 3 6.4C3 10.4 8 15 8 15Z" fill="currentColor"/><circle cx="8" cy="6.4" r="1.9" fill="#0b0c0e"/></svg>';
+  function setField(n, state) {
+    FST[n] = state;
+    const fl = fieldOf(f(n)), hit = $('.hit', fl);
+    ['busy', 'found', 'miss'].forEach((s) => fl.classList.toggle('is-' + s, state === s));
+    hit.hidden = state === 'idle';
+    if (state === 'busy') hit.innerHTML = `<i class="spin" aria-hidden="true"></i><span>${t('acBusy')}</span>`;
+    else if (state === 'miss') hit.innerHTML = `<b>!</b><span>${t('acMiss')}</span>`;
+    else if (state === 'found') { hit.innerHTML = PIN + '<span></span>'; $('span', hit).textContent = label(AC[n]); }
+    hit.title = state === 'found' ? label(AC[n]) : '';
+  }
+  async function resolve(n) {
+    const q = f(n).value.trim();
+    if (AC[n] && AC[n].q === q) { setField(n, 'found'); return AC[n]; }
+    setField(n, 'busy');
+    let list;
+    try { list = await lookup(q, true); } catch (e) { if (f(n).value.trim() === q) setField(n, 'idle'); throw e; }
+    if (f(n).value.trim() !== q) return null;      // typed on meanwhile; a newer estimate will follow
+    AC[n] = list[0] ? { ...list[0], q } : null;
+    setField(n, AC[n] ? 'found' : 'miss');
+    return AC[n];
+  }
+
+  // Suggestion list (ARIA combobox): arrows + Enter, Esc closes, tap or click picks.
+  const acState = { pickup: { items: [], active: -1, seq: 0, timer: 0 }, destination: { items: [], active: -1, seq: 0, timer: 0 } };
+  function listOf(n) { return $('#' + f(n).getAttribute('aria-controls')); }
+  function closeList(n) {
+    const ul = listOf(n); ul.hidden = true; ul.innerHTML = '';
+    acState[n].items = []; acState[n].active = -1;
+    f(n).setAttribute('aria-expanded', 'false'); f(n).removeAttribute('aria-activedescendant');
+    fieldOf(f(n)).classList.remove('ac-open');
+  }
+  function renderList(n, mode) {
+    const ul = listOf(n), s = acState[n];
+    ul.innerHTML = '';
+    if (mode === 'busy' && !s.items.length) {
+      ul.innerHTML = `<li class="ac-note" role="presentation"><i class="spin" aria-hidden="true"></i>${t('acBusy')}</li>`;
+    } else if (mode === 'none') {
+      ul.innerHTML = `<li class="ac-note" role="presentation">${t(digiOn ? 'acNone' : 'acNoneSlow')}</li>`;
+    } else {
+      s.items.forEach((p, i) => {
+        const li = document.createElement('li');
+        li.className = 'ac-opt'; li.id = `${ul.id}-${i}`; li.setAttribute('role', 'option');
+        li.setAttribute('aria-selected', String(i === s.active));
+        li.innerHTML = PIN + '<span><b></b><small></small></span>';
+        $('b', li).textContent = p.main; $('small', li).textContent = p.sub;
+        li.addEventListener('pointerdown', (e) => e.preventDefault());   // keep focus in the input
+        li.addEventListener('click', () => pick(n, i));
+        ul.append(li);
+      });
+      if (mode === 'busy') ul.insertAdjacentHTML('beforeend', '<li class="ac-note ac-more" role="presentation"><i class="spin" aria-hidden="true"></i></li>');
+    }
+    ul.insertAdjacentHTML('beforeend', `<li class="ac-attr" role="presentation">${digiOn ? 'Digitransit · ' : ''}© OpenStreetMap</li>`);
+    ul.hidden = false;
+    f(n).setAttribute('aria-expanded', 'true');
+    fieldOf(f(n)).classList.add('ac-open');
+    if (s.active >= 0) f(n).setAttribute('aria-activedescendant', `${ul.id}-${s.active}`); else f(n).removeAttribute('aria-activedescendant');
+  }
+  async function suggest(n) {
+    const q = f(n).value.trim(), s = acState[n], seq = ++s.seq;
+    if (q.length < 3 || document.activeElement !== f(n)) return closeList(n);
+    renderList(n, 'busy');
+    try {
+      const items = await lookup(q);
+      if (seq !== s.seq || document.activeElement !== f(n)) return;
+      s.items = items; s.active = -1;
+      renderList(n, items.length ? 'list' : 'none');
+    } catch (e) { if (seq === s.seq) closeList(n); }
+  }
+  function pick(n, i) {
+    const p = acState[n].items[i]; if (!p) return;
+    const town = (p.sub || '').split(',').pop().replace(/\d{5}\s*/, '').trim();
+    f(n).value = town && !p.main.includes(town) ? `${p.main}, ${town}` : p.main;
+    AC[n] = { ...p, q: f(n).value.trim(), picked: true };
+    closeList(n); clearBad(f(n)); setField(n, 'found');
+    if (n === 'pickup' && !f('destination').value.trim()) f('destination').focus(); else f(n).blur();
+    estimateSoon(0);
+  }
+
   async function route(a, b) {
     const key = `${a.lon},${a.lat};${b.lon},${b.lat}`;
     if (!routeCache.has(key)) {
@@ -160,15 +284,20 @@ const booking = (() => {
   async function estimate() {
     const a = f('pickup').value.trim(), b = f('destination').value.trim();
     const seq = ++estSeq;
-    if (a.length < 3 || b.length < 3) { est.state = 'idle'; est.total = null; return refresh(); }
+    if (a.length < 3 || b.length < 3) {
+      est.state = 'idle'; est.total = null;
+      if (a.length >= 3 && !(AC.pickup && AC.pickup.q === a)) resolve('pickup').catch(() => {});
+      if (b.length >= 3 && !(AC.destination && AC.destination.q === b)) resolve('destination').catch(() => {});
+      return refresh();
+    }
     est.state = 'busy'; refresh();
     try {
-      const [ga, gb] = await Promise.all([geocode(a), geocode(b)]);
+      const [ga, gb] = await Promise.all([resolve('pickup'), resolve('destination')]);
       if (seq !== estSeq) return;
       if (!ga || !gb) { est.state = 'fail'; est.total = null; return refresh(); }
       const r = await route(ga, gb);
       if (seq !== estSeq) return;
-      Object.assign(est, { state: 'ok', km: r.km, min: r.min, from: ga.name, to: gb.name });
+      Object.assign(est, { state: 'ok', km: r.km, min: r.min, from: label(ga), to: label(gb) });
     } catch (err) {
       // Network or service trouble (not a bad address): say so, and let the customer book anyway.
       if (seq !== estSeq) return;
@@ -179,8 +308,31 @@ const booking = (() => {
   let estTimer = 0;
   const estimateSoon = (ms) => { clearTimeout(estTimer); estTimer = setTimeout(estimate, ms); };
   ['pickup', 'destination'].forEach((n) => {
-    f(n).addEventListener('input', () => { estSeq++; est.state = 'idle'; est.total = null; refresh(); estimateSoon(1200); });
-    f(n).addEventListener('change', () => estimateSoon(0));
+    const inp = f(n), s = acState[n];
+    inp.addEventListener('input', () => {
+      estSeq++; est.state = 'idle'; est.total = null; setField(n, 'idle'); refresh();
+      clearTimeout(s.timer);
+      if (inp.value.trim().length < 3) { s.seq++; closeList(n); } else s.timer = setTimeout(() => suggest(n), digiOn ? 220 : 800);
+      estimateSoon(digiOn ? 900 : 1200);
+    });
+    inp.addEventListener('change', () => estimateSoon(0));
+    // Reopen the list on focus unless the customer already picked this exact address from it.
+    inp.addEventListener('focus', () => { if (inp.value.trim().length >= 3 && !(AC[n] && AC[n].picked && AC[n].q === inp.value.trim())) suggest(n); });
+    inp.addEventListener('blur', () => { s.seq++; clearTimeout(s.timer); closeList(n); });
+    inp.addEventListener('keydown', (e) => {
+      const open = !listOf(n).hidden && s.items.length;
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        if (!open) return;
+        e.preventDefault();
+        const k = s.items.length;
+        s.active = e.key === 'ArrowDown' ? (s.active + 1) % k : (s.active <= 0 ? k - 1 : s.active - 1);
+        renderList(n, 'list');
+      } else if (e.key === 'Enter' && open) {
+        e.preventDefault(); pick(n, Math.max(0, s.active));
+      } else if (e.key === 'Escape' && !listOf(n).hidden) {
+        e.preventDefault(); s.seq++; closeList(n);
+      }
+    });
   });
 
   function refresh() {
@@ -191,14 +343,19 @@ const booking = (() => {
     $('.book-fee .fee-l').textContent = t(when.get() === 'now' ? 'feeNow' : 'feeThen');
     const box = $('#bookEst');
     ['idle', 'busy', 'ok', 'fail', 'err'].forEach((s) => box.classList.toggle('is-' + s, est.state === s));
+    const tot = $('#bookTotal');
     if (est.state === 'ok') {
       est.total = fare({ km: est.km, min: est.min, day }).total * (goods ? (CFG.goodsFactor || 1) : 1);
-      $('#bookTotal').textContent = '≈ ' + money(est.total);
+      const txt = '≈ ' + money(est.total);
+      if (tot.textContent !== txt) { tot.textContent = txt; tot.classList.remove('pop'); void tot.offsetWidth; tot.classList.add('pop'); }
       $('#beInfo').textContent = `${km1(est.km)} km · ${hm(est.min)}${goods ? ' · ' + t('estGoods') : ''}`;
     } else {
-      if (est.state !== 'busy') $('#bookTotal').textContent = '–';
+      // busy: the CSS shows three pulsing dots in place of the price
+      tot.textContent = est.state === 'busy' ? '' : '–';
       $('#beInfo').textContent = t({ busy: 'estBusy', fail: 'estFail', err: 'estErr' }[est.state] || 'estHint');
     }
+    tot.setAttribute('aria-busy', String(est.state === 'busy'));
+    ['pickup', 'destination'].forEach((n) => setField(n, FST[n]));   // re-renders the status lines in the current language
     if (step === 2) summary();
   }
   f('date').addEventListener('input', refresh);
@@ -221,6 +378,9 @@ const booking = (() => {
   $('#swapBtn').addEventListener('click', (e) => {
     const a = f('pickup').value; f('pickup').value = f('destination').value; f('destination').value = a;
     e.currentTarget.classList.toggle('spun');
+    [AC.pickup, AC.destination] = [AC.destination, AC.pickup];
+    [FST.pickup, FST.destination] = [FST.destination, FST.pickup];
+    setField('pickup', FST.pickup); setField('destination', FST.destination);
     estimateSoon(0);
   });
 
@@ -277,7 +437,7 @@ const booking = (() => {
   $('#backStep1').addEventListener('click', () => { go(1); $('#toStep2').focus({ preventScroll: true }); });
   // Enter in step 1 should advance, not submit.
   $$('[data-step="1"] input', form).forEach((i) => i.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') { e.preventDefault(); $('#toStep2').click(); }
+    if (e.key === 'Enter' && !e.defaultPrevented) { e.preventDefault(); $('#toStep2').click(); }   // Enter that picked a suggestion is already handled
   }));
 
   const notes = f('notes');
@@ -361,7 +521,7 @@ const booking = (() => {
   });
 
   $('#again').addEventListener('click', () => {
-    form.reset(); defaultsLater(); estSeq++; est.state = 'idle'; est.total = null; when.set('now'); pax.set('1-4'); notes.style.height = '';
+    form.reset(); defaultsLater(); estSeq++; est.state = 'idle'; est.total = null; AC.pickup = AC.destination = null; setField('pickup', 'idle'); setField('destination', 'idle'); when.set('now'); pax.set('1-4'); notes.style.height = '';
     $$('.field', form).forEach((fl) => fl.classList.remove('is-bad'));
     go(1); f('pickup').focus({ preventScroll: true });
   });

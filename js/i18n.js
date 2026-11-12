@@ -28,7 +28,7 @@ export const T = {
 
     meterLt: "Know the fare", meterBd: "before you go.",
     meterLede: "Pick a common route or move the sliders. The estimate is worked out from Averox's own rates.",
-    estLabel: "Estimated fare", estHint: "Type both addresses to see an estimate.", estBusy: "Working out the route…", estFail: "Couldn't find that address. Check the spelling or add the town.", estGoods: "goods, VAT 25.5 %", estErr: "Couldn't work out an estimate right now. You can still book; the meter sets the price.", exampleTag: "Price list example",
+    estLabel: "Estimated fare", estHint: "Type both addresses to see an estimate.", estBusy: "Working out the route…", estFail: "Couldn't find that address. Check the spelling or add the town.", estGoods: "goods, VAT 25.5 %", acBusy: "Searching…", acMiss: "Address not found. Add the house number or town.", acNone: "No matches. Try adding the town.", acNoneSlow: "No matches yet. Type the full street name and number.", estErr: "Couldn't work out an estimate right now. You can still book; the meter sets the price.", exampleTag: "Price list example",
     rcStart: "Starting fee", rcTime: "Time", rcDist: "Distance",
     meterNote: "An estimate, not a quote. Traffic, the route and waiting time change the final meter price. Includes VAT 14 %.",
     routesLabel: "From Keskustori", routesFoot: "Road distance and drive time without traffic.",
@@ -99,7 +99,7 @@ export const T = {
 
     meterLt: "Tiedä hinta", meterBd: "ennen lähtöä.",
     meterLede: "Valitse tavallinen reitti tai liikuta säätimiä. Arvio lasketaan Averoxin omilla hinnoilla.",
-    estLabel: "Hinta-arvio", estHint: "Kirjoita molemmat osoitteet, niin näet hinta-arvion.", estBusy: "Lasketaan reittiä…", estFail: "Osoitetta ei löytynyt. Tarkista kirjoitusasu tai lisää paikkakunta.", estGoods: "tavara, alv 25,5 %", estErr: "Hinta-arviota ei saatu juuri nyt. Voit silti tilata, hinta määräytyy mittarin mukaan.", exampleTag: "Hinnaston esimerkki",
+    estLabel: "Hinta-arvio", estHint: "Kirjoita molemmat osoitteet, niin näet hinta-arvion.", estBusy: "Lasketaan reittiä…", estFail: "Osoitetta ei löytynyt. Tarkista kirjoitusasu tai lisää paikkakunta.", estGoods: "tavara, alv 25,5 %", acBusy: "Haetaan…", acMiss: "Osoitetta ei löytynyt. Lisää talonumero tai paikkakunta.", acNone: "Ei osumia. Lisää paikkakunta.", acNoneSlow: "Ei osumia vielä. Kirjoita koko kadunnimi ja numero.", estErr: "Hinta-arviota ei saatu juuri nyt. Voit silti tilata, hinta määräytyy mittarin mukaan.", exampleTag: "Hinnaston esimerkki",
     rcStart: "Aloitusmaksu", rcTime: "Minuuttiveloitus", rcDist: "Kilometriveloitus",
     meterNote: "Arvio, ei kiinteä hinta. Liikenne, reitti ja odotus vaikuttavat lopulliseen taksamittarin hintaan. Sisältää alv 14 %.",
     routesLabel: "Keskustorilta", routesFoot: "Ajomatka ja -aika tieverkkoa pitkin ilman ruuhkaa.",

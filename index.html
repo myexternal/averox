@@ -93,19 +93,25 @@
           <fieldset class="pane is-on" data-step="1">
             <legend class="sr" data-i18n="stepTrip">Matka</legend>
             <div class="route-fields">
-              <label class="field">
-                <span data-i18n="fFrom">Mistä</span>
-                <input name="pickup" required autocomplete="street-address" enterkeyhint="next" data-i18n-ph="phAddress" placeholder="Katuosoite tai paikka">
+              <div class="field addr">
+                <label for="pickupIn" data-i18n="fFrom">Mistä</label>
+                <div class="addr-box"><input id="pickupIn" name="pickup" required autocomplete="off" spellcheck="false" enterkeyhint="next" data-i18n-ph="phAddress" placeholder="Katuosoite tai paikka"
+                  role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="acPickup" aria-describedby="hitPickup">
+                <ul class="ac" id="acPickup" role="listbox" aria-labelledby="pickupIn" hidden></ul></div>
+                <p class="hit" id="hitPickup" aria-live="polite" hidden></p>
                 <em class="err" data-i18n="errReq">Pakollinen tieto</em>
-              </label>
+              </div>
               <button type="button" class="swap" id="swapBtn" aria-label="Vaihda lähtö ja määränpää" data-i18n-aria="swap">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4v14m0 0-3-3m3 3 3-3M17 20V6m0 0-3 3m3-3 3 3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </button>
-              <label class="field">
-                <span data-i18n="fTo">Minne</span>
-                <input name="destination" required enterkeyhint="next" data-i18n-ph="phAddress" placeholder="Katuosoite tai paikka">
+              <div class="field addr">
+                <label for="destIn" data-i18n="fTo">Minne</label>
+                <div class="addr-box"><input id="destIn" name="destination" required autocomplete="off" spellcheck="false" enterkeyhint="next" data-i18n-ph="phAddress" placeholder="Katuosoite tai paikka"
+                  role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="acDest" aria-describedby="hitDest">
+                <ul class="ac" id="acDest" role="listbox" aria-labelledby="destIn" hidden></ul></div>
+                <p class="hit" id="hitDest" aria-live="polite" hidden></p>
                 <em class="err" data-i18n="errReq">Pakollinen tieto</em>
-              </label>
+              </div>
             </div>
 
             <div class="seg" role="radiogroup" aria-label="Milloin" data-i18n-aria="fWhen" data-name="when">

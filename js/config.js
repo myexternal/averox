@@ -34,5 +34,11 @@ window.AVEROX = {
 
   // Goods: the price list gives VAT-inclusive rates for passengers (VAT 14 %) and says goods carry VAT 25.5 %.
   // The booking estimate assumes the same net rates, so goods = passenger price × 1.255 / 1.14. Set to 1 if goods cost the same.
-  goodsFactor: 1.255 / 1.14
+  goodsFactor: 1.255 / 1.14,
+
+  // Address suggestions in "Tilaa kyyti". Empty: OpenStreetMap suggestions after the customer pauses typing.
+  // For suggestions while typing, like Google Maps: the address of the Averox Cloudflare Worker, e.g.
+  // "https://averox-geo.yourname.workers.dev". The Worker holds the Digitransit key as a secret, so no key is ever in
+  // these files or in the browser. Setup: see averox-geo-worker/README.md.
+  geoProxy: "https://averox-geo.crimson-thunder-9945.workers.dev"
 };
