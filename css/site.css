@@ -279,6 +279,7 @@ button, [role="radio"], [role="tab"], .btn { user-select: none; -webkit-user-sel
   transform-origin: top center; animation: acIn 160ms var(--ease-out);
 }
 .addr-box { position: relative; min-width: 0; }
+.ac.is-ghost { opacity: 0; transition: opacity 140ms ease; }
 @keyframes acIn { from { opacity: 0; transform: translateY(-4px) scale(.98); } to { opacity: 1; transform: none; } }
 .ac-opt { display: grid; grid-template-columns: 16px minmax(0, 1fr); gap: 10px; align-items: start; padding: 10px 10px; border-radius: 9px; cursor: pointer; color: var(--snow); }
 .ac-opt svg { width: 16px; height: 16px; margin-top: 2px; color: var(--slush); }

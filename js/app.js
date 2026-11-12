@@ -222,8 +222,20 @@ const booking = (() => {
     f(n).setAttribute('aria-expanded', 'false'); f(n).removeAttribute('aria-activedescendant');
     fieldOf(f(n)).classList.remove('ac-open');
   }
+  // After a tap, the phone still sends mouse events to whatever is under the finger. The list stays in place,
+  // invisible, for a moment so those land on it and not on the button underneath (e.g. "Myöhemmin").
+  function ghostClose(n) {
+    const ul = listOf(n), s = acState[n];
+    s.items = []; s.active = -1;
+    ul.classList.add('is-ghost');
+    f(n).setAttribute('aria-expanded', 'false'); f(n).removeAttribute('aria-activedescendant');
+    fieldOf(f(n)).classList.remove('ac-open');
+    clearTimeout(s.ghostT);
+    s.ghostT = setTimeout(() => { ul.classList.remove('is-ghost'); if (!s.items.length) closeList(n); }, 450);
+  }
   function renderList(n, mode) {
     const ul = listOf(n), s = acState[n];
+    clearTimeout(s.ghostT); ul.classList.remove('is-ghost');
     ul.innerHTML = '';
     if (mode === 'busy' && !s.items.length) {
       ul.innerHTML = `<li class="ac-note" role="presentation"><i class="spin" aria-hidden="true"></i>${t('acBusy')}</li>`;
@@ -236,7 +248,18 @@ const booking = (() => {
         li.setAttribute('aria-selected', String(i === s.active));
         li.innerHTML = PIN + '<span><b></b><small></small></span>';
         $('b', li).textContent = p.main; $('small', li).textContent = p.sub;
-        li.addEventListener('pointerdown', (e) => e.preventDefault());   // keep focus in the input
+        // Desktop: mousedown would move focus away and close the list, so it is cancelled and the click picks.
+        // Phones (iOS Safari): the input can lose focus before any click arrives, so a tap picks on finger-up,
+        // unless the finger moved (scrolling the list).
+        let start = null;
+        li.addEventListener('mousedown', (e) => e.preventDefault());
+        li.addEventListener('pointerdown', (e) => { start = { x: e.clientX, y: e.clientY }; if (e.pointerType === 'mouse') e.preventDefault(); });
+        li.addEventListener('pointerup', (e) => {
+          if (e.pointerType === 'mouse' || !start) return;
+          const moved = Math.hypot(e.clientX - start.x, e.clientY - start.y) > 10; start = null;
+          if (!moved) { e.preventDefault(); pick(n, i, true); }
+        });
+        li.addEventListener('pointercancel', () => { start = null; });
         li.addEventListener('click', () => pick(n, i));
         ul.append(li);
       });
@@ -259,12 +282,14 @@ const booking = (() => {
       renderList(n, items.length ? 'list' : 'none');
     } catch (e) { if (seq === s.seq) closeList(n); }
   }
-  function pick(n, i) {
+  function pick(n, i, touch = false) {
     const p = acState[n].items[i]; if (!p) return;
+    clearTimeout(acState[n].closeT);
     const town = (p.sub || '').split(',').pop().replace(/\d{5}\s*/, '').trim();
     f(n).value = town && !p.main.includes(town) ? `${p.main}, ${town}` : p.main;
     AC[n] = { ...p, q: f(n).value.trim(), picked: true };
-    closeList(n); clearBad(f(n)); setField(n, 'found');
+    if (touch) ghostClose(n); else closeList(n);
+    clearBad(f(n)); setField(n, 'found');
     if (n === 'pickup' && !f('destination').value.trim()) f('destination').focus(); else f(n).blur();
     estimateSoon(0);
   }
@@ -309,6 +334,7 @@ const booking = (() => {
   const estimateSoon = (ms) => { clearTimeout(estTimer); estTimer = setTimeout(estimate, ms); };
   ['pickup', 'destination'].forEach((n) => {
     const inp = f(n), s = acState[n];
+    listOf(n).addEventListener('mousedown', (e) => e.preventDefault());   // taps on the list never steal focus
     inp.addEventListener('input', () => {
       estSeq++; est.state = 'idle'; est.total = null; setField(n, 'idle'); refresh();
       clearTimeout(s.timer);
@@ -318,7 +344,8 @@ const booking = (() => {
     inp.addEventListener('change', () => estimateSoon(0));
     // Reopen the list on focus unless the customer already picked this exact address from it.
     inp.addEventListener('focus', () => { if (inp.value.trim().length >= 3 && !(AC[n] && AC[n].picked && AC[n].q === inp.value.trim())) suggest(n); });
-    inp.addEventListener('blur', () => { s.seq++; clearTimeout(s.timer); closeList(n); });
+    // Closing waits a moment so a tap on a suggestion still lands when the phone blurs the field first.
+    inp.addEventListener('blur', () => { s.seq++; clearTimeout(s.timer); clearTimeout(s.closeT); s.closeT = setTimeout(() => { if (document.activeElement !== inp) closeList(n); }, 400); });
     inp.addEventListener('keydown', (e) => {
       const open = !listOf(n).hidden && s.items.length;
       if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {

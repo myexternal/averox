@@ -12,7 +12,7 @@ All in **`js/config.js`**:
    - Each email is a table in Finnish: Mistä, Minne, Milloin, Matkustajat, Aloitusmaksu, Nimi, Puhelin, Sähköposti, Lisätiedot, Asiakkaan kieli. Replying goes to the customer if they gave an email.
    - Alternatives: a Web3Forms key (`web3formsKey`) or a Formspree endpoint (`formspreeEndpoint`) is used first if filled in. With all three empty, the form runs in preview mode.
 2. **Phone and email.** `email` is set to hello@averox.fi and shows in the closing section and footer. `phone` is still empty (hidden). A taxi site really should show a phone number.
-3. **Share image domain.** In `index.html`, `og:image` points to `https://averox.onrender.com/media/share.jpg`. Change it to the real address once the site is deployed (it must be an absolute URL).
+3. **Domain: averox.fi** (2026-11-12). `index.html` uses `https://averox.fi/` for the canonical link, `og:url` and the share image (`https://averox.fi/media/share.jpg`). If the main address becomes www.averox.fi instead, change those three. The address-suggestion Worker must allow the domain (see `averox-geo-worker/README.md`).
 4. **Rates** also live in `config.js`; the price list, meter, map estimates and booking fee all follow them.
 
 ## Language
